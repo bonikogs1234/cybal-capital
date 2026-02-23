@@ -6,9 +6,9 @@ const GlobalStyles = () => (
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #080808; --dark: #0f0f0f; --dark2: #161616;
+      --black: #1a1a2e; --dark: #22223b; --dark2: #2d2d44;
       --gold: #c9a84c; --gold-light: #e2c47a; --gold-dim: rgba(201,168,76,0.15);
-      --white: #f5f1eb; --white-dim: rgba(245,241,235,0.55);
+      --white: #f0eee8; --white-dim: rgba(240,238,232,0.65);
       --green: #4caf82; --red: #e05c5c;
       --serif: 'Cormorant Garamond', serif; --sans: 'Jost', sans-serif;
     }
@@ -24,6 +24,35 @@ const GlobalStyles = () => (
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-track { background:var(--dark); }
     ::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+
+    /* RESPONSIVE */
+    .desktop-nav { display:flex !important; }
+    .hamburger   { display:none !important; }
+    .mobile-menu { display:none !important; }
+
+    @media (max-width: 768px) {
+      .desktop-nav  { display:none !important; }
+      .hamburger    { display:flex !important; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+      .hamburger span { width:24px; height:2px; background:var(--white); display:block; transition:all 0.3s; }
+      .mobile-menu  { display:flex !important; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(8,8,8,0.97); z-index:998; align-items:center; justify-content:center; gap:36px; animation:fadeIn 0.3s ease; }
+      .stats-grid    { grid-template-columns:1fr 1fr !important; }
+      .prop-grid     { grid-template-columns:1fr !important; }
+      .about-grid    { grid-template-columns:1fr !important; }
+      .services-grid { grid-template-columns:1fr 1fr !important; }
+      .contact-grid  { grid-template-columns:1fr !important; }
+      .footer-grid   { grid-template-columns:1fr 1fr !important; gap:24px !important; }
+      .locations-grid{ grid-template-columns:1fr 1fr !important; }
+      .detail-grid   { grid-template-columns:1fr !important; }
+      .detail-stats  { grid-template-columns:1fr 1fr !important; }
+      .admin-stats   { grid-template-columns:1fr 1fr !important; }
+      .admin-recent  { grid-template-columns:1fr !important; }
+      .form-row      { grid-template-columns:1fr !important; }
+      .cta-banner    { flex-direction:column !important; text-align:center !important; }
+    }
+    @media (max-width: 480px) {
+      .services-grid { grid-template-columns:1fr !important; }
+      .footer-grid   { grid-template-columns:1fr !important; }
+    }
   `}</style>
 );
 
@@ -142,7 +171,8 @@ const Navbar = ({ page, setPage }) => {
   const { user, logoutUser } = useAuth();
   const toast = useToast();
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -150,57 +180,99 @@ const Navbar = ({ page, setPage }) => {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const go = (p) => { setPage(p); setMenuOpen(false); window.scrollTo(0,0); };
+  const go = (p) => { setPage(p); setMobileOpen(false); setUserMenu(false); window.scrollTo(0,0); };
 
   return (
-    <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:999, padding: scrolled?"12px 40px":"20px 40px", background: scrolled?"rgba(8,8,8,0.97)":"transparent", backdropFilter: scrolled?"blur(20px)":"none", borderBottom: scrolled?"1px solid rgba(201,168,76,0.12)":"none", display:"flex", alignItems:"center", justifyContent:"space-between", transition:"all 0.4s ease" }}>
+    <>
+      <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:999, padding: scrolled?"12px 24px":"18px 24px", background: scrolled?"rgba(8,8,8,0.97)":"transparent", backdropFilter: scrolled?"blur(20px)":"none", borderBottom: scrolled?"1px solid rgba(201,168,76,0.12)":"none", display:"flex", alignItems:"center", justifyContent:"space-between", transition:"all 0.4s ease" }}>
 
-      {/* Logo — Top Left */}
-      <div onClick={() => go("home")} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
-        <div style={{ width:28, height:28, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 35%,100% 100%,0% 100%,0% 35%)", flexShrink:0 }} />
-        <div>
-          <div style={{ fontFamily:"var(--serif)", fontSize:"0.95rem", fontWeight:600, letterSpacing:"0.06em", color:"var(--white)", lineHeight:1 }}>CYBAL CAPITAL</div>
-          <div style={{ fontSize:"0.48rem", letterSpacing:"0.2em", color:"var(--gold)", marginTop:2 }}>LIMITED</div>
+        {/* Logo */}
+        <div onClick={() => go("home")} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", zIndex:1000 }}>
+          <div style={{ width:28, height:28, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 35%,100% 100%,0% 100%,0% 35%)", flexShrink:0 }} />
+          <div>
+            <div style={{ fontFamily:"var(--serif)", fontSize:"0.95rem", fontWeight:600, letterSpacing:"0.06em", color:"var(--white)", lineHeight:1 }}>CYBAL CAPITAL</div>
+            <div style={{ fontSize:"0.48rem", letterSpacing:"0.2em", color:"var(--gold)", marginTop:2 }}>LIMITED</div>
+          </div>
         </div>
-      </div>
 
-      {/* Nav Links + Sign In — Right */}
-      <div style={{ display:"flex", alignItems:"center", gap:32 }}>
-        {[["home","Home"],["properties","Properties"],["about","About"],["contact","Contact"]].map(([p,label]) => (
-          <span key={p} onClick={() => go(p)} style={{ color: page===p?"var(--gold)":"var(--white-dim)", fontSize:"0.74rem", letterSpacing:"0.12em", textTransform:"uppercase", cursor:"pointer", transition:"color 0.2s", fontWeight: page===p?500:300, whiteSpace:"nowrap" }}
-            onMouseEnter={e=>e.target.style.color="var(--gold)"} onMouseLeave={e=>{ if(page!==p) e.target.style.color="var(--white-dim)"; }}>
-            {label}
-          </span>
-        ))}
-
-        <div style={{ width:1, height:18, background:"rgba(201,168,76,0.3)", flexShrink:0 }} />
-
-        {user ? (
-          <>
-            {user.role === "admin" && (
-              <span onClick={() => go("admin")} style={{ color: page==="admin"?"var(--gold)":"var(--white-dim)", fontSize:"0.74rem", letterSpacing:"0.12em", textTransform:"uppercase", cursor:"pointer" }}>Admin</span>
-            )}
-            <div style={{ position:"relative" }}>
-              <div onClick={() => setMenuOpen(!menuOpen)} style={{ cursor:"pointer" }}>
-                <div style={{ width:30, height:30, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"0.78rem", fontWeight:700 }}>
+        {/* Desktop Nav Links */}
+        <div className="desktop-nav" style={{ alignItems:"center", gap:32 }}>
+          {[["home","Home"],["properties","Properties"],["about","About"],["contact","Contact"]].map(([p,label]) => (
+            <span key={p} onClick={() => go(p)} style={{ color: page===p?"var(--gold)":"var(--white-dim)", fontSize:"0.74rem", letterSpacing:"0.12em", textTransform:"uppercase", cursor:"pointer", transition:"color 0.2s", fontWeight: page===p?500:300 }}
+              onMouseEnter={e=>e.target.style.color="var(--gold)"} onMouseLeave={e=>{ if(page!==p) e.target.style.color="var(--white-dim)"; }}>
+              {label}
+            </span>
+          ))}
+          <div style={{ width:1, height:18, background:"rgba(201,168,76,0.3)" }} />
+          {user ? (
+            <>
+              {user.role==="admin" && <span onClick={()=>go("admin")} style={{ color:"var(--white-dim)", fontSize:"0.74rem", letterSpacing:"0.12em", textTransform:"uppercase", cursor:"pointer" }}>Admin</span>}
+              <div style={{ position:"relative" }}>
+                <div onClick={()=>setUserMenu(!userMenu)} style={{ width:30, height:30, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"0.78rem", fontWeight:700, cursor:"pointer" }}>
                   {user.name?.[0]?.toUpperCase()}
                 </div>
+                {userMenu && (
+                  <div style={{ position:"absolute", top:44, right:0, background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", minWidth:180, zIndex:100 }}>
+                    <div onClick={()=>go("profile")} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--white-dim)", cursor:"pointer", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>My Profile</div>
+                    <div onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--red)", cursor:"pointer" }}>Log Out</div>
+                  </div>
+                )}
               </div>
-              {menuOpen && (
-                <div style={{ position:"absolute", top:44, right:0, background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", minWidth:180, zIndex:100 }}>
-                  <div onClick={() => go("profile")} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--white-dim)", cursor:"pointer", borderBottom:"1px solid rgba(255,255,255,0.06)" }}
-                    onMouseEnter={e=>e.target.style.color="var(--gold)"} onMouseLeave={e=>e.target.style.color="var(--white-dim)"}>My Profile</div>
-                  <div onClick={() => { logoutUser(); toast("Logged out", "success"); go("home"); setMenuOpen(false); }}
-                    style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--red)", cursor:"pointer" }}>Log Out</div>
+            </>
+          ) : (
+            <GoldBtn small onClick={()=>go("login")}>Sign In</GoldBtn>
+          )}
+        </div>
+
+        {/* Hamburger — Mobile Only */}
+        <button className="hamburger" onClick={()=>setMobileOpen(!mobileOpen)} style={{ zIndex:1000 }}>
+          <span style={{ transform: mobileOpen?"rotate(45deg) translate(5px,5px)":"none" }} />
+          <span style={{ opacity: mobileOpen?0:1 }} />
+          <span style={{ transform: mobileOpen?"rotate(-45deg) translate(5px,-5px)":"none" }} />
+        </button>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      {mobileOpen && (
+        <div className="mobile-menu" style={{ zIndex:997 }}>
+
+          {/* Nav Links */}
+          {[["home","Home"],["properties","Properties"],["about","About"],["contact","Contact"]].map(([p,label]) => (
+            <span key={p} onClick={()=>go(p)} style={{ fontFamily:"var(--serif)", fontSize:"2rem", color: page===p?"var(--gold)":"var(--white)", cursor:"pointer", letterSpacing:"0.06em" }}>{label}</span>
+          ))}
+
+          {/* Gold divider */}
+          <div style={{ width:40, height:1, background:"rgba(201,168,76,0.4)" }} />
+
+          {/* Auth section */}
+          {user ? (
+            <>
+              {/* Show user name */}
+              <div style={{ textAlign:"center" }}>
+                <div style={{ width:48, height:48, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"1.2rem", fontWeight:700, margin:"0 auto 8px" }}>
+                  {user.name?.[0]?.toUpperCase()}
                 </div>
+                <div style={{ fontFamily:"var(--serif)", fontSize:"1rem", color:"var(--white-dim)" }}>{user.name}</div>
+              </div>
+
+              {/* Admin Dashboard — only visible after secret login */}
+              {user.role === "admin" && (
+                <span onClick={()=>go("admin")} style={{ fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--gold)", cursor:"pointer", letterSpacing:"0.06em" }}>
+                  Dashboard
+                </span>
               )}
-            </div>
-          </>
-        ) : (
-          <GoldBtn small onClick={() => go("login")}>Sign In</GoldBtn>
-        )}
-      </div>
-    </nav>
+
+              {/* Log Out */}
+              <span onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--red)", cursor:"pointer" }}>
+                Log Out
+              </span>
+            </>
+          ) : (
+            <GoldBtn onClick={()=>go("login")}>Sign In</GoldBtn>
+          )}
+        </div>
+      )}
+    </>
   );
 };
 
@@ -270,7 +342,7 @@ const HomePage = ({ setPage }) => {
 
       {/* Stats */}
       <section style={{ background:"var(--gold)" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", maxWidth:"100%", margin:"0 auto" }}>
+        <div className="stats-grid" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", width:"100%", margin:"0 auto" }}>
           {STATS.map((s,i) => (
             <div key={i} style={{ padding:"26px 20px", textAlign:"center", borderRight:i<3?"1px solid rgba(8,8,8,0.15)":"none" }}>
               <div style={{ fontFamily:"var(--serif)", fontSize:"1.9rem", fontWeight:600, color:"var(--black)" }}>{s.value}</div>
@@ -290,7 +362,7 @@ const HomePage = ({ setPage }) => {
             </div>
             <GoldBtn outline small onClick={() => { setPage("properties"); window.scrollTo(0,0); }}>View All</GoldBtn>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:24 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20 }}>
             {featured.map(l => <PropertyCard key={l._id} listing={l} setPage={setPage} />)}
           </div>
         </div>
@@ -298,7 +370,7 @@ const HomePage = ({ setPage }) => {
 
       {/* About snippet */}
       <section style={{ background:"var(--dark)", padding:"100px 5%" }}>
-        <div style={{ maxWidth:"100%", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:72, alignItems:"center" }}>
+        <div style={{ maxWidth:"100%", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"center" }}>
           <div style={{ position:"relative" }}>
             <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=85" alt="City skyline" style={{ width:"100%", height:500, objectFit:"cover" }} />
             <div style={{ position:"absolute", top:-14, left:-14, width:"55%", height:"55%", border:"1px solid var(--gold)", zIndex:-1 }} />
@@ -458,7 +530,7 @@ const PropertiesPage = ({ setPage }) => {
                 <p>Try adjusting your search filters</p>
               </div>
             ) : (
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:24 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20 }}>
                 {listings.map(l => <PropertyCard key={l._id} listing={l} setPage={setPage} />)}
               </div>
             )}
@@ -1038,7 +1110,7 @@ const AboutPage = ({ setPage }) => (
       </div>
     </div>
     <div style={{ maxWidth:"100%", margin:"0 auto", padding:"72px 5%" }}>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:72, alignItems:"center", marginBottom:80 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"center", marginBottom:80 }}>
         <div style={{ position:"relative" }}>
           <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=85" alt="City" style={{ width:"100%", height:500, objectFit:"cover" }} />
           <div style={{ position:"absolute", top:-14, left:-14, width:"55%", height:"55%", border:"1px solid var(--gold)", zIndex:-1 }} />
@@ -1073,7 +1145,7 @@ const Footer = ({ setPage }) => {
   return (
     <footer style={{ background:"#050505", borderTop:"1px solid rgba(201,168,76,0.12)", padding:"56px 5% 32px" }}>
       <div style={{ maxWidth:"100%", margin:"0 auto" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:44, marginBottom:44 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:32, marginBottom:36 }}>
           <div>
             <div style={{ fontFamily:"var(--serif)", fontSize:"1.2rem", fontWeight:600, color:"var(--white)", letterSpacing:"0.06em", marginBottom:3 }}>CYBAL CAPITAL</div>
             <div style={{ fontSize:"0.58rem", letterSpacing:"0.22em", color:"var(--gold)", marginBottom:16 }}>LIMITED</div>
@@ -1095,20 +1167,112 @@ const Footer = ({ setPage }) => {
         </div>
         <div style={{ borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <div style={{ fontSize:"0.73rem", color:"rgba(255,255,255,0.22)" }}>© 2026 Cybal Capital Limited. All rights reserved.</div>
-          <div style={{ display:"flex", gap:20 }}>
+          <div style={{ display:"flex", gap:20, alignItems:"center" }}>
             {["Privacy Policy","Terms of Service"].map(t=>(
               <span key={t} style={{ fontSize:"0.7rem", color:"rgba(255,255,255,0.22)", cursor:"pointer" }}>{t}</span>
             ))}
           </div>
+        </div>
+
+        {/* Hidden admin link — subtle, only you know it's clickable */}
+        <div style={{ marginTop:12, textAlign:"left" }}>
+          <span
+            onClick={() => go("admin-login")}
+            style={{ fontSize:"0.58rem", color:"rgba(255,255,255,0.08)", cursor:"default", letterSpacing:"0.18em", textTransform:"uppercase", userSelect:"none", transition:"color 0.3s" }}
+            onMouseEnter={e => { e.target.style.color="rgba(201,168,76,0.35)"; e.target.style.cursor="pointer"; }}
+            onMouseLeave={e => { e.target.style.color="rgba(255,255,255,0.08)"; e.target.style.cursor="default"; }}>
+            Admin
+          </span>
         </div>
       </div>
     </footer>
   );
 };
 
+// ── ADMIN LOGIN PAGE (Secret) ─────────────────────────────────────────────────
+const AdminLoginPage = ({ setPage }) => {
+  const { loginUser } = useAuth();
+  const toast = useToast();
+  const [form, setForm] = useState({ email:"", password:"" });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 900));
+    if (form.email === "admin@cybal.com" && form.password === "admin123") {
+      loginUser({ _id:"admin1", name:"Admin", email:"admin@cybal.com", role:"admin" });
+      toast("Welcome, Admin!"); setPage("admin"); window.scrollTo(0,0);
+    } else {
+      toast("Invalid admin credentials", "error");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ minHeight:"100vh", background:"var(--dark)", display:"flex", alignItems:"center", justifyContent:"center", padding:"100px 20px 40px" }}>
+      <div style={{ width:"100%", maxWidth:400 }}>
+        <div style={{ textAlign:"center", marginBottom:36 }}>
+          <div style={{ width:48, height:48, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 35%,100% 100%,0% 100%,0% 35%)", margin:"0 auto 16px" }} />
+          <div style={{ fontFamily:"var(--serif)", fontSize:"1.2rem", fontWeight:600, color:"var(--white)", letterSpacing:"0.06em" }}>CYBAL CAPITAL</div>
+          <div style={{ fontSize:"0.6rem", letterSpacing:"0.22em", color:"var(--gold)", marginTop:4 }}>ADMIN ACCESS</div>
+        </div>
+
+        <div style={{ background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", padding:"36px 32px" }}>
+          <h2 style={{ fontFamily:"var(--serif)", fontSize:"1.6rem", fontWeight:300, color:"var(--white)", marginBottom:6 }}>Admin Sign In</h2>
+          <p style={{ fontSize:"0.78rem", color:"var(--white-dim)", marginBottom:28 }}>Restricted access. Authorised personnel only.</p>
+
+          <form onSubmit={handleSubmit} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            <Field label="Admin Email">
+              <input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} style={InputStyle} required
+                onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} />
+            </Field>
+            <Field label="Password">
+              <input type="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} style={InputStyle} required
+                onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} />
+            </Field>
+            <GoldBtn type="submit" style={{ width:"100%", marginTop:8 }}>
+              {loading ? "Verifying..." : "Access Dashboard"}
+            </GoldBtn>
+          </form>
+
+          <p onClick={()=>setPage("home")} style={{ textAlign:"center", marginTop:20, fontSize:"0.78rem", color:"var(--white-dim)", cursor:"pointer" }}>
+            ← Back to Website
+          </p>
+        </div>
+
+        <p style={{ textAlign:"center", marginTop:16, fontSize:"0.68rem", color:"rgba(255,255,255,0.15)", letterSpacing:"0.1em" }}>
+          CYBAL CAPITAL LIMITED · ADMIN PORTAL
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ── SECRET ADMIN PATH (only you know this URL) ───────────────────────────────
+const SECRET_PATH = "cybal-admin-2026"; // change this anytime
+
 // ── APP ROUTER ────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState("home");
+
+  // Listen for secret URL hash
+  useEffect(() => {
+    const check = () => {
+      const hash = window.location.hash.replace("#/", "").replace("#", "");
+      if (hash === SECRET_PATH) setPage("admin-login");
+    };
+    check();
+    window.addEventListener("hashchange", check);
+    return () => window.removeEventListener("hashchange", check);
+  }, []);
+
+  // Clear hash when leaving admin
+  useEffect(() => {
+    if (!["admin","admin-login"].includes(page)) {
+      history.replaceState(null, "", window.location.pathname);
+    }
+  }, [page]);
 
   const renderPage = () => {
     switch(page) {
@@ -1119,6 +1283,7 @@ export default function App() {
       case "contact":         return <ContactPage setPage={setPage} />;
       case "login":           return <AuthPage mode="login" setPage={setPage} />;
       case "register":        return <AuthPage mode="register" setPage={setPage} />;
+      case "admin-login":     return <AdminLoginPage setPage={setPage} />;
       case "admin":           return <AdminPage setPage={setPage} />;
       default:                return <HomePage setPage={setPage} />;
     }
