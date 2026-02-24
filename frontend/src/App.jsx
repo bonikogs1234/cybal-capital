@@ -203,24 +203,19 @@ const Navbar = ({ page, setPage }) => {
               {label}
             </span>
           ))}
-          <div style={{ width:1, height:18, background:"rgba(201,168,76,0.3)" }} />
-          {user ? (
-            <>
-              {user.role==="admin" && <span onClick={()=>go("admin")} style={{ color:"var(--white-dim)", fontSize:"0.74rem", letterSpacing:"0.12em", textTransform:"uppercase", cursor:"pointer" }}>Admin</span>}
-              <div style={{ position:"relative" }}>
-                <div onClick={()=>setUserMenu(!userMenu)} style={{ width:30, height:30, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"0.78rem", fontWeight:700, cursor:"pointer" }}>
-                  {user.name?.[0]?.toUpperCase()}
-                </div>
-                {userMenu && (
-                  <div style={{ position:"absolute", top:44, right:0, background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", minWidth:180, zIndex:100 }}>
-                    <div onClick={()=>go("profile")} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--white-dim)", cursor:"pointer", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>My Profile</div>
-                    <div onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--red)", cursor:"pointer" }}>Log Out</div>
-                  </div>
-                )}
+          {/* Admin avatar shown only after secret login */}
+          {user && user.role === "admin" && (
+            <div style={{ position:"relative" }}>
+              <div onClick={()=>setUserMenu(!userMenu)} style={{ width:30, height:30, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"0.78rem", fontWeight:700, cursor:"pointer" }}>
+                {user.name?.[0]?.toUpperCase()}
               </div>
-            </>
-          ) : (
-            <GoldBtn small onClick={()=>go("login")}>Sign In</GoldBtn>
+              {userMenu && (
+                <div style={{ position:"absolute", top:44, right:0, background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", minWidth:180, zIndex:100 }}>
+                  <div onClick={()=>go("admin")} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--gold)", cursor:"pointer", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>Dashboard</div>
+                  <div onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--red)", cursor:"pointer" }}>Log Out</div>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
@@ -244,31 +239,22 @@ const Navbar = ({ page, setPage }) => {
           {/* Gold divider */}
           <div style={{ width:40, height:1, background:"rgba(201,168,76,0.4)" }} />
 
-          {/* Auth section */}
-          {user ? (
+          {/* Admin only — shown after secret login */}
+          {user && user.role === "admin" && (
             <>
-              {/* Show user name */}
               <div style={{ textAlign:"center" }}>
                 <div style={{ width:48, height:48, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"1.2rem", fontWeight:700, margin:"0 auto 8px" }}>
                   {user.name?.[0]?.toUpperCase()}
                 </div>
-                <div style={{ fontFamily:"var(--serif)", fontSize:"1rem", color:"var(--white-dim)" }}>{user.name}</div>
+                <div style={{ fontFamily:"var(--serif)", fontSize:"0.9rem", color:"var(--gold)", letterSpacing:"0.1em" }}>ADMIN</div>
               </div>
-
-              {/* Admin Dashboard — only visible after secret login */}
-              {user.role === "admin" && (
-                <span onClick={()=>go("admin")} style={{ fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--gold)", cursor:"pointer", letterSpacing:"0.06em" }}>
-                  Dashboard
-                </span>
-              )}
-
-              {/* Log Out */}
-              <span onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--red)", cursor:"pointer" }}>
+              <span onClick={()=>go("admin")} style={{ fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--gold)", cursor:"pointer", letterSpacing:"0.06em" }}>
+                Dashboard
+              </span>
+              <span onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ fontFamily:"var(--serif)", fontSize:"1.3rem", color:"var(--red)", cursor:"pointer" }}>
                 Log Out
               </span>
             </>
-          ) : (
-            <GoldBtn onClick={()=>go("login")}>Sign In</GoldBtn>
           )}
         </div>
       )}
@@ -1281,8 +1267,8 @@ export default function App() {
       case "property-detail": return <PropertyDetailPage setPage={setPage} />;
       case "about":           return <AboutPage setPage={setPage} />;
       case "contact":         return <ContactPage setPage={setPage} />;
-      case "login":           return <AuthPage mode="login" setPage={setPage} />;
-      case "register":        return <AuthPage mode="register" setPage={setPage} />;
+      case "login":           return <HomePage setPage={setPage} />;
+      case "register":        return <HomePage setPage={setPage} />;
       case "admin-login":     return <AdminLoginPage setPage={setPage} />;
       case "admin":           return <AdminPage setPage={setPage} />;
       default:                return <HomePage setPage={setPage} />;
