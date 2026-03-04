@@ -1,4 +1,8 @@
 import { useState, useEffect, createContext, useContext, useCallback } from "react";
+import { db, auth, storage } from "./firebase";
+import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, serverTimestamp } from "firebase/firestore";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // ── GLOBAL STYLES ─────────────────────────────────────────────────────────────
 const GlobalStyles = () => (
@@ -6,7 +10,7 @@ const GlobalStyles = () => (
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #1a1a2e; --dark: #22223b; --dark2: #2d2d44;
+      --black: #12122a; --dark: #1a1a3e; --dark2: #222255;
       --gold: #c9a84c; --gold-light: #e2c47a; --gold-dim: rgba(201,168,76,0.15);
       --white: #f0eee8; --white-dim: rgba(240,238,232,0.65);
       --green: #4caf82; --red: #e05c5c;
@@ -76,6 +80,59 @@ const MOCK_ENQUIRIES = [
 const fmtPrice = (n) => "KSh " + Number(n).toLocaleString();
 const fmtDate  = (d) => new Date(d).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
 
+// ── FIREBASE API ─────────────────────────────────────────────────────────────
+const api = {
+  // Properties
+  getProperties: async (filters = {}) => {
+    const q = query(collection(db, "properties"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    let props = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (filters.type) props = props.filter(p => p.type === filters.type);
+    if (filters.status) props = props.filter(p => p.status === filters.status);
+    if (filters.neighbourhood) props = props.filter(p => p.location?.neighbourhood?.toLowerCase().includes(filters.neighbourhood.toLowerCase()));
+    if (filters.search) props = props.filter(p => p.title?.toLowerCase().includes(filters.search.toLowerCase()));
+    if (filters.minPrice) props = props.filter(p => p.price >= Number(filters.minPrice));
+    if (filters.maxPrice) props = props.filter(p => p.price <= Number(filters.maxPrice));
+    return props;
+  },
+  getFeatured: async () => {
+    const q = query(collection(db, "properties"), where("isFeatured", "==", true), limit(6));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  },
+  getProperty: async (id) => {
+    const snap = await getDoc(doc(db, "properties", id));
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  },
+  createProperty: async (data) => {
+    return await addDoc(collection(db, "properties"), { ...data, createdAt: serverTimestamp(), views: 0 });
+  },
+  updateProperty: async (id, data) => {
+    return await updateDoc(doc(db, "properties", id), data);
+  },
+  deleteProperty: async (id) => {
+    return await deleteDoc(doc(db, "properties", id));
+  },
+  // Enquiries
+  submitEnquiry: async (data) => {
+    return await addDoc(collection(db, "enquiries"), { ...data, status: "New", createdAt: serverTimestamp() });
+  },
+  getEnquiries: async () => {
+    const q = query(collection(db, "enquiries"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  },
+  updateEnquiryStatus: async (id, status) => {
+    return await updateDoc(doc(db, "enquiries", id), { status });
+  },
+  // Upload image
+  uploadImage: async (file, path) => {
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
+  }
+};
+
 // ── AUTH CONTEXT ──────────────────────────────────────────────────────────────
 const AuthCtx = createContext();
 const useAuth = () => useContext(AuthCtx);
@@ -84,16 +141,19 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("cybal_user");
-    if (saved) setUser(JSON.parse(saved));
+    const unsub = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({ uid: firebaseUser.uid, email: firebaseUser.email, name: "Admin", role: "admin" });
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsub();
   }, []);
 
-  const loginUser = (userData) => {
-    localStorage.setItem("cybal_user", JSON.stringify(userData));
-    setUser(userData);
-  };
-  const logoutUser = () => {
-    localStorage.removeItem("cybal_user");
+  const loginUser = (userData) => setUser(userData);
+  const logoutUser = async () => {
+    await signOut(auth);
     setUser(null);
   };
 
@@ -138,9 +198,9 @@ const GoldBtn = ({ children, onClick, type="button", outline=false, small=false,
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ background: outline ? (hov?"var(--gold)":"transparent") : (hov?"var(--gold-light)":"var(--gold)"),
         color: outline ? (hov?"var(--black)":"var(--gold)") : "var(--black)",
-        border:"1px solid var(--gold)", padding: small?"8px 18px":"14px 32px",
+        border:"1px solid var(--gold)", padding: small?"8px 22px":"14px 36px",
         fontSize: small?"0.72rem":"0.78rem", letterSpacing:"0.14em", textTransform:"uppercase",
-        cursor:"pointer", fontWeight:500, transition:"all 0.25s", ...style }}>
+        cursor:"pointer", fontWeight:500, transition:"all 0.25s", borderRadius:"4px", ...style }}>
       {children}
     </button>
   );
@@ -162,7 +222,7 @@ const TagBadge = ({ tag }) => {
 };
 
 const StatusBadge = ({ status }) => {
-  const colors = { "For Sale":"var(--green)", Sold:"var(--red)", "Under Offer":"var(--gold)" };
+  const colors = { "For Sale":"var(--green)", "For Rent":"#4a9eda", Sold:"var(--red)", "Under Offer":"var(--gold)", Rented:"#9b72cf" };
   return <span style={{ color:colors[status]||"#888", fontSize:"0.7rem", fontWeight:600, letterSpacing:"0.08em" }}>{status}</span>;
 };
 
@@ -187,11 +247,11 @@ const Navbar = ({ page, setPage }) => {
       <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:999, padding: scrolled?"12px 24px":"18px 24px", background: scrolled?"rgba(8,8,8,0.97)":"transparent", backdropFilter: scrolled?"blur(20px)":"none", borderBottom: scrolled?"1px solid rgba(201,168,76,0.12)":"none", display:"flex", alignItems:"center", justifyContent:"space-between", transition:"all 0.4s ease" }}>
 
         {/* Logo */}
-        <div onClick={() => go("home")} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", zIndex:1000 }}>
-          <div style={{ width:28, height:28, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 35%,100% 100%,0% 100%,0% 35%)", flexShrink:0 }} />
+        <div onClick={() => go("home")} style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", zIndex:1000 }}>
+          <div style={{ width:42, height:42, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 30%,100% 100%,0% 100%,0% 30%)", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }} />
           <div>
-            <div style={{ fontFamily:"var(--serif)", fontSize:"0.95rem", fontWeight:600, letterSpacing:"0.06em", color:"var(--white)", lineHeight:1 }}>CYBAL CAPITAL</div>
-            <div style={{ fontSize:"0.48rem", letterSpacing:"0.2em", color:"var(--gold)", marginTop:2 }}>LIMITED</div>
+            <div style={{ fontFamily:"var(--serif)", fontSize:"1.1rem", fontWeight:700, letterSpacing:"0.08em", color:"var(--white)", lineHeight:1 }}>CYBAL CAPITAL</div>
+            <div style={{ fontSize:"0.52rem", letterSpacing:"0.24em", color:"var(--gold)", marginTop:3 }}>LIMITED</div>
           </div>
         </div>
 
@@ -550,9 +610,14 @@ const PropertyDetailPage = ({ setPage }) => {
   const handleEnquiry = async (e) => {
     e.preventDefault();
     setSending(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setSending(false); setSent(true);
-    toast("Enquiry sent! We will be in touch shortly.");
+    try {
+      await api.submitEnquiry({ ...enquiryForm, propertyId: property?.id || null, propertyTitle: property?.title || "" });
+      setSent(true);
+      toast("Enquiry sent! We will be in touch shortly.");
+    } catch (err) {
+      toast("Error sending enquiry. Please try again.", "error");
+    }
+    setSending(false);
   };
 
   return (
@@ -754,11 +819,29 @@ const AdminPage = ({ setPage }) => {
   const { user } = useAuth();
   const toast = useToast();
   const [tab, setTab] = useState("dashboard");
-  const [enquiries, setEnquiries] = useState(MOCK_ENQUIRIES);
-  const [listings, setListings] = useState(MOCK_LISTINGS);
+  const [enquiries, setEnquiries] = useState([]);
+  const [listings, setListings] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editListing, setEditListing] = useState(null);
   const [form, setForm] = useState({ title:"", description:"", price:"", type:"Apartment", tag:"New", status:"For Sale", location:{address:"",neighbourhood:""}, details:{beds:1,baths:1,sqft:0}, images:[{url:""}], features:"" });
+
+  // Load data from Firebase
+  useEffect(() => {
+    if (!user || user.role !== "admin") return;
+    setLoadingData(true);
+    Promise.all([api.getProperties(), api.getEnquiries()])
+      .then(([props, enqs]) => {
+        setListings(props.length > 0 ? props : MOCK_LISTINGS);
+        setEnquiries(enqs.length > 0 ? enqs : MOCK_ENQUIRIES);
+        setLoadingData(false);
+      })
+      .catch(() => {
+        setListings(MOCK_LISTINGS);
+        setEnquiries(MOCK_ENQUIRIES);
+        setLoadingData(false);
+      });
+  }, [user]);
 
   if (!user || user.role !== "admin") {
     return (
@@ -766,7 +849,7 @@ const AdminPage = ({ setPage }) => {
         <div style={{ textAlign:"center" }}>
           <div style={{ fontFamily:"var(--serif)", fontSize:"3rem", color:"var(--red)", marginBottom:16 }}>Access Denied</div>
           <p style={{ color:"var(--white-dim)", marginBottom:24 }}>Admin privileges required.</p>
-          <GoldBtn onClick={() => setPage("login")}>Sign In as Admin</GoldBtn>
+          <GoldBtn onClick={() => setPage("admin-login")}>Sign In as Admin</GoldBtn>
         </div>
       </div>
     );
@@ -775,6 +858,7 @@ const AdminPage = ({ setPage }) => {
   const STATS = [
     { label:"Total Listings", value:listings.length, icon:"🏠", color:"var(--gold)" },
     { label:"For Sale", value:listings.filter(l=>l.status==="For Sale").length, icon:"📋", color:"var(--green)" },
+    { label:"For Rent", value:listings.filter(l=>l.status==="For Rent").length, icon:"🔑", color:"#4a9eda" },
     { label:"Sold", value:listings.filter(l=>l.status==="Sold").length, icon:"✓", color:"var(--red)" },
     { label:"New Enquiries", value:enquiries.filter(e=>e.status==="New").length, icon:"✉", color:"var(--gold)" },
   ];
@@ -782,28 +866,44 @@ const AdminPage = ({ setPage }) => {
   const openAdd = () => { setEditListing(null); setForm({ title:"", description:"", price:"", type:"Apartment", tag:"New", status:"For Sale", location:{address:"",neighbourhood:""}, details:{beds:1,baths:1,sqft:0}, images:[{url:""}], features:"" }); setShowForm(true); };
   const openEdit = (l) => { setEditListing(l); setForm({ ...l, features: l.features?.join(", ")||"" }); setShowForm(true); };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     const data = { ...form, price: Number(form.price), features: form.features.split(",").map(f=>f.trim()).filter(Boolean), images: form.images?.length ? form.images : [{url:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=900"}] };
-    if (editListing) {
-      setListings(ls => ls.map(l => l._id===editListing._id ? { ...l, ...data } : l));
-      toast("Property updated successfully");
-    } else {
-      setListings(ls => [{ ...data, _id:Date.now().toString(), views:0, isFeatured:false, createdAt:new Date().toISOString() }, ...ls]);
-      toast("Property added successfully");
+    try {
+      if (editListing) {
+        await api.updateProperty(editListing.id, data);
+        setListings(ls => ls.map(l => l.id===editListing.id ? { ...l, ...data } : l));
+        toast("Property updated successfully");
+      } else {
+        const ref = await api.createProperty(data);
+        setListings(ls => [{ ...data, id: ref.id, views:0, isFeatured:false }, ...ls]);
+        toast("Property added successfully");
+      }
+    } catch (err) {
+      toast("Error saving property", "error");
     }
     setShowForm(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to remove this listing?")) return;
-    setListings(ls => ls.filter(l => l._id !== id));
-    toast("Property removed");
+    try {
+      await api.deleteProperty(id);
+      setListings(ls => ls.filter(l => l.id !== id));
+      toast("Property removed");
+    } catch (err) {
+      toast("Error removing property", "error");
+    }
   };
 
-  const updateEnquiryStatus = (id, status) => {
-    setEnquiries(es => es.map(e => e._id===id ? {...e,status} : e));
-    toast("Enquiry status updated");
+  const updateEnquiryStatus = async (id, status) => {
+    try {
+      await api.updateEnquiryStatus(id, status);
+      setEnquiries(es => es.map(e => e.id===id ? {...e,status} : e));
+      toast("Enquiry status updated");
+    } catch (err) {
+      toast("Error updating status", "error");
+    }
   };
 
   const TABS = [["dashboard","Dashboard"],["listings","Listings"],["enquiries","Enquiries"]];
@@ -901,7 +1001,7 @@ const AdminPage = ({ setPage }) => {
                     </Field>
                     <Field label="Status">
                       <select value={form.status} onChange={e=>setForm({...form,status:e.target.value})} style={{ ...InputStyle, appearance:"none" }}>
-                        {["For Sale","Sold","Under Offer"].map(s=><option key={s} value={s} style={{background:"#161616"}}>{s}</option>)}
+                        {["For Sale","For Rent","Sold","Rented","Under Offer"].map(s=><option key={s} value={s} style={{background:"#161616"}}>{s}</option>)}
                       </select>
                     </Field>
                     <Field label="Tag">
@@ -1185,12 +1285,14 @@ const AdminLoginPage = ({ setPage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise(r => setTimeout(r, 900));
-    if (form.email === "admin@cybal.com" && form.password === "admin123") {
-      loginUser({ _id:"admin1", name:"Admin", email:"admin@cybal.com", role:"admin" });
-      toast("Welcome, Admin!"); setPage("admin"); window.scrollTo(0,0);
-    } else {
-      toast("Invalid admin credentials", "error");
+    try {
+      await signInWithEmailAndPassword(auth, form.email, form.password);
+      loginUser({ email: form.email, name: "Admin", role: "admin" });
+      toast("Welcome, Admin!");
+      setPage("admin");
+      window.scrollTo(0,0);
+    } catch (err) {
+      toast("Invalid credentials", "error");
     }
     setLoading(false);
   };
