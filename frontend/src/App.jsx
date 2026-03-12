@@ -17,7 +17,9 @@ const GlobalStyles = () => (
       --serif: 'Cormorant Garamond', serif; --sans: 'Jost', sans-serif;
     }
     html { scroll-behavior: smooth; }
-    body { background: var(--black); color: var(--white); font-family: var(--sans); font-weight: 300; overflow-x: hidden; }
+    body { background: var(--black); color: var(--white); font-family: var(--sans); font-weight: 300; overflow-x: hidden; width: 100%; }
+    * { max-width: 100%; box-sizing: border-box; }
+    img { max-width: 100%; height: auto; }
     ::selection { background: var(--gold); color: var(--black); }
     input, select, textarea, button { font-family: var(--sans); }
     @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
@@ -29,40 +31,114 @@ const GlobalStyles = () => (
     ::-webkit-scrollbar-track { background:var(--dark); }
     ::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
 
-    /* RESPONSIVE */
+    /* ── VIEWPORT FIX ── */
+    html { font-size: 16px; }
+    meta[name="viewport"] { content: "width=device-width, initial-scale=1.0"; }
+
+    /* ── NAVBAR ── */
     .desktop-nav { display:flex !important; }
     .hamburger   { display:none !important; }
     .mobile-menu { display:none !important; }
 
+    /* ── MOBILE 768px ── */
     @media (max-width: 768px) {
-      .desktop-nav  { display:none !important; }
-      .hamburger    { display:flex !important; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
-      .hamburger span { width:24px; height:2px; background:var(--white); display:block; transition:all 0.3s; }
-      .mobile-menu  { display:flex !important; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(8,8,8,0.97); z-index:998; align-items:center; justify-content:center; gap:36px; animation:fadeIn 0.3s ease; }
+      /* Navbar */
+      .desktop-nav { display:none !important; }
+
+
+      /* Grids */
       .stats-grid    { grid-template-columns:1fr 1fr !important; }
       .prop-grid     { grid-template-columns:1fr !important; }
-      .about-grid    { grid-template-columns:1fr !important; }
-      .services-grid { grid-template-columns:1fr 1fr !important; }
-      .contact-grid  { grid-template-columns:1fr !important; }
-      .footer-grid   { grid-template-columns:1fr 1fr !important; gap:24px !important; }
+      .about-grid    { grid-template-columns:1fr !important; gap:24px !important; }
+      .services-grid { grid-template-columns:1fr 1fr !important; gap:12px !important; }
+      .contact-grid  { grid-template-columns:1fr !important; gap:24px !important; }
+      .footer-grid   { grid-template-columns:1fr 1fr !important; gap:20px !important; }
       .locations-grid{ grid-template-columns:1fr 1fr !important; }
       .detail-grid   { grid-template-columns:1fr !important; }
       .detail-stats  { grid-template-columns:1fr 1fr !important; }
       .admin-stats   { grid-template-columns:1fr 1fr !important; }
       .admin-recent  { grid-template-columns:1fr !important; }
       .form-row      { grid-template-columns:1fr !important; }
-      .cta-banner    { flex-direction:column !important; text-align:center !important; }
+      .cta-banner    { flex-direction:column !important; text-align:center !important; gap:12px !important; }
+
+      /* Hero */
+      .hero-content  { padding:0 6% 22% !important; }
+      .hero-btns     { flex-direction:column !important; gap:10px !important; width:100% !important; }
+      .hero-btns button { width:100% !important; }
+      .scroll-indicator { display:none !important; }
+
+      /* Cards */
+      .prop-card-img { height:200px !important; }
+
+      /* Admin */
+      .admin-tabs { overflow-x:auto !important; white-space:nowrap !important; -webkit-overflow-scrolling:touch !important; }
+
+      /* Footer */
+      .footer-bottom { flex-direction:column !important; gap:10px !important; text-align:center !important; }
+
+      /* Touch targets */
+      button, a, [onClick] { min-height:44px; min-width:44px; }
+
+      /* Sections padding */
+      .section-pad { padding:48px 5% !important; }
     }
+
+    /* ── MOBILE 480px ── */
     @media (max-width: 480px) {
       .services-grid { grid-template-columns:1fr !important; }
       .footer-grid   { grid-template-columns:1fr !important; }
+    }
+
+    @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+
+    /* ── GLOBAL OVERFLOW FIX ── */
+    html, body { overflow-x: hidden; width: 100%; max-width: 100%; }
+    #root { overflow-x: hidden; width: 100%; }
+    input, select, textarea { font-size: 16px !important; width: 100% !important; max-width: 100% !important; }
+    img { max-width: 100% !important; }
+
+    @media (max-width: 768px) {
+      /* Contact page */
+      .contact-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+
+      /* About page */  
+      .about-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .about-img-wrap { position: relative; margin-bottom: 24px; }
+      .about-gold-box { display: none !important; }
+
+      /* Footer */
+      .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 20px !important; }
+
+      /* Page headers */
+      .page-header { padding: 24px 5% 20px !important; }
+
+      /* Form rows */
+      .form-row { grid-template-columns: 1fr !important; }
+
+      /* Admin enquiries */
+      .enquiry-grid { grid-template-columns: 1fr !important; }
+
+      /* Properties filters */
+      .filter-bar { flex-wrap: wrap !important; gap: 8px !important; }
+      .filter-bar select, .filter-bar input { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
+
+      /* Property detail */
+      .detail-grid { grid-template-columns: 1fr !important; }
+
+      /* CTA */
+      .cta-banner { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr !important; }
+      .filter-bar select, .filter-bar input { flex: 1 1 100% !important; }
+      .stats-grid { grid-template-columns: 1fr 1fr !important; }
     }
   `}</style>
 );
 
 // ── MOCK API (replace with real axios calls in production) ────────────────────
 const MOCK_LISTINGS = [
-  { _id:"1", title:"The Pinnacle Residences", location:{neighbourhood:"Westlands", address:"14 Westlands Rd"}, price:45000000, details:{beds:4,baths:4,sqft:3800}, type:"Penthouse", tag:"Featured", status:"For Sale", isFeatured:true, views:234, images:[{url:"https://images.unsplash.com/photo-1600607687939-ce8a6d8f7046?w=900&q=85"}], description:"A stunning penthouse with panoramic city views, floor-to-ceiling windows, and premium finishes throughout.", features:["Swimming Pool","Gym","24hr Security","Smart Home","Balcony"], createdAt:"2026-01-15" },
   { _id:"2", title:"Serene Gardens Estate", location:{neighbourhood:"Karen", address:"88 Karen Rd"}, price:78000000, details:{beds:5,baths:5,sqft:5200}, type:"Villa", tag:"Exclusive", status:"For Sale", isFeatured:true, views:189, images:[{url:"https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=85"}], description:"Majestic villa set in lush gardens with a private pool, guest cottage, and expansive entertaining spaces.", features:["Private Pool","Guest Cottage","Garden","Security","Garage"], createdAt:"2026-01-20" },
   { _id:"3", title:"Skyline Tower Suite", location:{neighbourhood:"Upper Hill", address:"5 Hill Ln"}, price:28500000, details:{beds:3,baths:3,sqft:2400}, type:"Apartment", tag:"New", status:"For Sale", isFeatured:false, views:112, images:[{url:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&q=85"}], description:"Contemporary apartment in the heart of the business district with spectacular skyline views.", features:["Concierge","Gym","Rooftop Terrace","Underground Parking"], createdAt:"2026-02-01" },
   { _id:"4", title:"The Grand Runda", location:{neighbourhood:"Runda", address:"3 Runda Grove"}, price:120000000, details:{beds:6,baths:6,sqft:7800}, type:"Mansion", tag:"Luxury", status:"For Sale", isFeatured:true, views:301, images:[{url:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=900&q=85"}], description:"An architectural masterpiece with cinema room, wine cellar, infinity pool, and manicured grounds.", features:["Infinity Pool","Cinema Room","Wine Cellar","Staff Quarters","Tennis Court"], createdAt:"2026-01-10" },
@@ -206,7 +282,7 @@ const GoldBtn = ({ children, onClick, type="button", outline=false, small=false,
   );
 };
 
-const InputStyle = { width:"100%", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.12)", color:"var(--white)", padding:"13px 16px", fontSize:"0.88rem", fontWeight:300, outline:"none", transition:"border-color 0.2s" };
+const InputStyle = { width:"100%", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.12)", color:"var(--white)", padding:"12px 14px", fontSize:"16px", fontWeight:300, outline:"none", transition:"border-color 0.2s", boxSizing:"border-box" };
 const LabelStyle = { fontSize:"0.68rem", letterSpacing:"0.14em", textTransform:"uppercase", color:"var(--gold)", marginBottom:6, display:"block" };
 
 const Field = ({ label, children }) => (
@@ -230,95 +306,66 @@ const StatusBadge = ({ status }) => {
 const Navbar = ({ page, setPage }) => {
   const { user, logoutUser } = useAuth();
   const toast = useToast();
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+  const go = (p) => { setPage(p); setUserMenu(false); window.scrollTo(0,0); };
 
-  const go = (p) => { setPage(p); setMobileOpen(false); setUserMenu(false); window.scrollTo(0,0); };
+  const NAV_LINKS = [
+    { page:"home",       label:"Home" },
+    { page:"properties", label:"Properties" },
+    { page:"about",      label:"About" },
+    { page:"contact",    label:"Contact" },
+  ];
 
   return (
-    <>
-      <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:999, padding: scrolled?"12px 24px":"18px 24px", background: scrolled?"rgba(8,8,8,0.97)":"transparent", backdropFilter: scrolled?"blur(20px)":"none", borderBottom: scrolled?"1px solid rgba(201,168,76,0.12)":"none", display:"flex", alignItems:"center", justifyContent:"space-between", transition:"all 0.4s ease" }}>
+    <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:999, background:"rgba(12,12,40,0.97)", backdropFilter:"blur(20px)", borderBottom:"1px solid rgba(201,168,76,0.15)" }}>
 
-        {/* Logo */}
-        <div onClick={() => go("home")} style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", zIndex:1000 }}>
-          <div style={{ width:42, height:42, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 30%,100% 100%,0% 100%,0% 30%)", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }} />
+      {/* Row 1 — Logo */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+        <div onClick={() => go("home")} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
+          <div style={{ width:34, height:34, background:"linear-gradient(135deg,var(--gold),var(--gold-light))", clipPath:"polygon(50% 0%,100% 30%,100% 100%,0% 100%,0% 30%)", flexShrink:0 }} />
           <div>
-            <div style={{ fontFamily:"var(--serif)", fontSize:"1.1rem", fontWeight:700, letterSpacing:"0.08em", color:"var(--white)", lineHeight:1 }}>CYBAL CAPITAL</div>
-            <div style={{ fontSize:"0.52rem", letterSpacing:"0.24em", color:"var(--gold)", marginTop:3 }}>LIMITED</div>
+            <div style={{ fontFamily:"var(--serif)", fontSize:"0.95rem", fontWeight:700, letterSpacing:"0.06em", color:"var(--white)", lineHeight:1.1 }}>CYBAL CAPITAL</div>
+            <div style={{ fontSize:"0.44rem", letterSpacing:"0.2em", color:"var(--gold)" }}>LIMITED</div>
           </div>
         </div>
 
-        {/* Desktop Nav Links */}
-        <div className="desktop-nav" style={{ alignItems:"center", gap:32 }}>
-          {[["home","Home"],["properties","Properties"],["about","About"],["contact","Contact"]].map(([p,label]) => (
-            <span key={p} onClick={() => go(p)} style={{ color: page===p?"var(--gold)":"var(--white-dim)", fontSize:"0.74rem", letterSpacing:"0.12em", textTransform:"uppercase", cursor:"pointer", transition:"color 0.2s", fontWeight: page===p?500:300 }}
-              onMouseEnter={e=>e.target.style.color="var(--gold)"} onMouseLeave={e=>{ if(page!==p) e.target.style.color="var(--white-dim)"; }}>
-              {label}
-            </span>
-          ))}
-          {/* Admin avatar shown only after secret login */}
-          {user && user.role === "admin" && (
-            <div style={{ position:"relative" }}>
-              <div onClick={()=>setUserMenu(!userMenu)} style={{ width:30, height:30, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"0.78rem", fontWeight:700, cursor:"pointer" }}>
-                {user.name?.[0]?.toUpperCase()}
-              </div>
-              {userMenu && (
-                <div style={{ position:"absolute", top:44, right:0, background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", minWidth:180, zIndex:100 }}>
-                  <div onClick={()=>go("admin")} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--gold)", cursor:"pointer", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>Dashboard</div>
-                  <div onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ padding:"12px 18px", fontSize:"0.82rem", color:"var(--red)", cursor:"pointer" }}>Log Out</div>
-                </div>
-              )}
+        {/* Admin avatar — top right */}
+        {user?.role === "admin" && (
+          <div style={{ position:"relative" }}>
+            <div onClick={()=>setUserMenu(!userMenu)} style={{ width:30, height:30, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"0.78rem", fontWeight:700, cursor:"pointer" }}>
+              A
             </div>
-          )}
-        </div>
-
-        {/* Hamburger — Mobile Only */}
-        <button className="hamburger" onClick={()=>setMobileOpen(!mobileOpen)} style={{ zIndex:1000 }}>
-          <span style={{ transform: mobileOpen?"rotate(45deg) translate(5px,5px)":"none" }} />
-          <span style={{ opacity: mobileOpen?0:1 }} />
-          <span style={{ transform: mobileOpen?"rotate(-45deg) translate(5px,-5px)":"none" }} />
-        </button>
-      </nav>
-
-      {/* Mobile Menu Overlay */}
-      {mobileOpen && (
-        <div className="mobile-menu" style={{ zIndex:997 }}>
-
-          {/* Nav Links */}
-          {[["home","Home"],["properties","Properties"],["about","About"],["contact","Contact"]].map(([p,label]) => (
-            <span key={p} onClick={()=>go(p)} style={{ fontFamily:"var(--serif)", fontSize:"2rem", color: page===p?"var(--gold)":"var(--white)", cursor:"pointer", letterSpacing:"0.06em" }}>{label}</span>
-          ))}
-
-          {/* Gold divider */}
-          <div style={{ width:40, height:1, background:"rgba(201,168,76,0.4)" }} />
-
-          {/* Admin only — shown after secret login */}
-          {user && user.role === "admin" && (
-            <>
-              <div style={{ textAlign:"center" }}>
-                <div style={{ width:48, height:48, borderRadius:"50%", background:"var(--gold)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--black)", fontSize:"1.2rem", fontWeight:700, margin:"0 auto 8px" }}>
-                  {user.name?.[0]?.toUpperCase()}
-                </div>
-                <div style={{ fontFamily:"var(--serif)", fontSize:"0.9rem", color:"var(--gold)", letterSpacing:"0.1em" }}>ADMIN</div>
+            {userMenu && (
+              <div style={{ position:"absolute", top:42, right:0, background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.2)", minWidth:160, borderRadius:4, zIndex:100, overflow:"hidden" }}>
+                <div onClick={()=>go("admin")} style={{ padding:"12px 16px", fontSize:"0.8rem", color:"var(--gold)", cursor:"pointer", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>⚙ Dashboard</div>
+                <div onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ padding:"12px 16px", fontSize:"0.8rem", color:"var(--red)", cursor:"pointer" }}>↩ Log Out</div>
               </div>
-              <span onClick={()=>go("admin")} style={{ fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--gold)", cursor:"pointer", letterSpacing:"0.06em" }}>
-                Dashboard
-              </span>
-              <span onClick={()=>{ logoutUser(); toast("Logged out"); go("home"); }} style={{ fontFamily:"var(--serif)", fontSize:"1.3rem", color:"var(--red)", cursor:"pointer" }}>
-                Log Out
-              </span>
-            </>
-          )}
-        </div>
-      )}
-    </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Row 2 — Nav links spread full width */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", padding:"0" }}>
+        {NAV_LINKS.map(({page:p, label}) => (
+          <span key={p} onClick={() => go(p)} style={{
+            flex:1, textAlign:"center",
+            color: page===p ? "var(--gold)" : "var(--white-dim)",
+            fontSize:"0.62rem", letterSpacing:"0.1em", textTransform:"uppercase",
+            cursor:"pointer", transition:"all 0.2s", fontWeight:page===p?600:300,
+            padding:"9px 4px",
+            borderBottom: page===p ? "2px solid var(--gold)" : "2px solid transparent",
+            display:"block"
+          }}
+            onMouseEnter={e=>{ e.currentTarget.style.color="var(--gold)"; }}
+            onMouseLeave={e=>{ if(page!==p) e.currentTarget.style.color="var(--white-dim)"; }}>
+            {label}
+          </span>
+        ))}
+      </div>
+
+    </nav>
   );
 };
 
@@ -359,17 +406,17 @@ const HomePage = ({ setPage }) => {
           </div>
         ))}
         <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, rgba(8,8,8,0.5) 0%, rgba(8,8,8,0.25) 50%, rgba(8,8,8,0.85) 100%)" }} />
-        <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"0 8% 9%" }}>
+        <div className="hero-content" style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"0 5% 12%" }}>
           <div style={{ width:50, height:1, background:"var(--gold)", marginBottom:24, animation:"fadeIn 1s 0.3s both" }} />
           <div style={{ animation:"fadeUp 0.9s 0.4s both" }}>
-            <p style={{ fontSize:"0.72rem", letterSpacing:"0.28em", color:"var(--gold)", textTransform:"uppercase", marginBottom:16 }}>Premier Luxury Real Estate · Exclusive Properties</p>
-            <h1 style={{ fontFamily:"var(--serif)", fontSize:"clamp(3rem, 7vw, 7rem)", fontWeight:300, lineHeight:1.05, color:"var(--white)", marginBottom:24 }}>
+            <p style={{ fontSize:"0.65rem", letterSpacing:"0.15em", color:"var(--gold)", textTransform:"uppercase", marginBottom:16 }}>Premier Luxury Real Estate · Exclusive Properties</p>
+            <h1 style={{ fontFamily:"var(--serif)", fontSize:"clamp(2.4rem, 7vw, 6rem)", fontWeight:300, lineHeight:1.05, color:"var(--white)", marginBottom:24 }}>
               Welcome to<br/><em style={{ fontStyle:"italic", color:"var(--gold-light)" }}>Cybal Capital</em><br/>Limited
             </h1>
-            <p style={{ fontSize:"1rem", color:"var(--white-dim)", maxWidth:520, lineHeight:1.8, marginBottom:40 }}>
+            <p style={{ fontSize:"1rem", color:"var(--white-dim)", maxWidth:"100%", lineHeight:1.7, marginBottom:32 }}>
               Exclusive access to multi-million-dollar properties. Guided by quality, integrity, and innovation.
             </p>
-            <div style={{ display:"flex", gap:14 }}>
+            <div className="hero-btns" style={{ display:"flex", gap:14 }}>
               <GoldBtn onClick={() => { setPage("properties"); window.scrollTo(0,0); }}>Explore Properties</GoldBtn>
               <GoldBtn outline onClick={() => { setPage("about"); window.scrollTo(0,0); }}>Our Story</GoldBtn>
             </div>
@@ -380,7 +427,7 @@ const HomePage = ({ setPage }) => {
             ))}
           </div>
         </div>
-        <div style={{ position:"absolute", bottom:36, right:48, display:"flex", flexDirection:"column", alignItems:"center", gap:8, animation:"float 2.5s ease-in-out infinite" }}>
+        <div className="scroll-indicator" style={{ position:"absolute", bottom:36, right:48, display:"flex", flexDirection:"column", alignItems:"center", gap:8, animation:"float 2.5s ease-in-out infinite" }}>
           <div style={{ fontSize:"0.58rem", letterSpacing:"0.2em", color:"var(--white-dim)", writingMode:"vertical-rl" }}>Scroll</div>
           <div style={{ width:1, height:48, background:"linear-gradient(to bottom,var(--gold),transparent)" }} />
         </div>
@@ -390,7 +437,7 @@ const HomePage = ({ setPage }) => {
       <section style={{ background:"var(--gold)" }}>
         <div className="stats-grid" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", width:"100%", margin:"0 auto" }}>
           {STATS.map((s,i) => (
-            <div key={i} style={{ padding:"26px 20px", textAlign:"center", borderRight:i<3?"1px solid rgba(8,8,8,0.15)":"none" }}>
+            <div key={i} style={{ padding:"20px 8px", textAlign:"center", borderRight:i<3?"1px solid rgba(8,8,8,0.15)":"none" }}>
               <div style={{ fontFamily:"var(--serif)", fontSize:"1.9rem", fontWeight:600, color:"var(--black)" }}>{s.value}</div>
               <div style={{ fontSize:"0.68rem", letterSpacing:"0.14em", color:"rgba(8,8,8,0.6)", textTransform:"uppercase", marginTop:5 }}>{s.label}</div>
             </div>
@@ -399,7 +446,7 @@ const HomePage = ({ setPage }) => {
       </section>
 
       {/* Featured Properties */}
-      <section style={{ background:"var(--black)", padding:"100px 5%" }}>
+      <section style={{ background:"var(--black)", padding:"clamp(40px,6vw,80px) 5%" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:52 }}>
             <div>
@@ -409,18 +456,18 @@ const HomePage = ({ setPage }) => {
             <GoldBtn outline small onClick={() => { setPage("properties"); window.scrollTo(0,0); }}>View All</GoldBtn>
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20 }}>
-            {featured.map(l => <PropertyCard key={l._id} listing={l} setPage={setPage} />)}
+            {featured.map(l => <PropertyCard key={l.id||l._id} listing={l} setPage={setPage} />)}
           </div>
         </div>
       </section>
 
       {/* About snippet */}
-      <section style={{ background:"var(--dark)", padding:"100px 5%" }}>
-        <div style={{ maxWidth:"100%", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"center" }}>
+      <section style={{ background:"var(--dark)", padding:"clamp(40px,6vw,80px) 5%" }}>
+        <div style={{ maxWidth:"100%", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:32, alignItems:"center" }}>
           <div style={{ position:"relative" }}>
-            <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=85" alt="City skyline" style={{ width:"100%", height:500, objectFit:"cover" }} />
-            <div style={{ position:"absolute", top:-14, left:-14, width:"55%", height:"55%", border:"1px solid var(--gold)", zIndex:-1 }} />
-            <div style={{ position:"absolute", bottom:-22, right:-22, background:"var(--gold)", padding:"22px 26px", textAlign:"center" }}>
+            <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=85" alt="City skyline" style={{ width:"100%", height:"clamp(280px,40vw,500px)", objectFit:"cover" }} />
+            <div className="about-gold-box" style={{ position:"absolute", top:-14, left:-14, width:"55%", height:"55%", border:"1px solid var(--gold)", zIndex:-1 }} />
+            <div className="about-gold-box" style={{ position:"absolute", bottom:-22, right:-22, background:"var(--gold)", padding:"16px 20px", textAlign:"center" }}>
               <div style={{ fontFamily:"var(--serif)", fontSize:"2rem", fontWeight:600, color:"var(--black)" }}>4+</div>
               <div style={{ fontSize:"0.65rem", letterSpacing:"0.1em", color:"rgba(8,8,8,0.7)", textTransform:"uppercase", marginTop:4 }}>Years<br/>Excellence</div>
             </div>
@@ -437,7 +484,7 @@ const HomePage = ({ setPage }) => {
       </section>
 
       {/* Services */}
-      <section style={{ background:"var(--black)", padding:"100px 5%" }}>
+      <section style={{ background:"var(--black)", padding:"clamp(40px,6vw,80px) 5%" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:60 }}>
             <p style={{ fontSize:"0.7rem", letterSpacing:"0.24em", color:"var(--gold)", textTransform:"uppercase", marginBottom:12 }}>What We Offer</p>
@@ -532,7 +579,7 @@ const PropertiesPage = ({ setPage }) => {
   const clearFilters = () => { setFilters({ search:"", type:"", minPrice:"", maxPrice:"", beds:"", neighbourhood:"" }); setApplied({}); };
 
   return (
-    <div style={{ paddingTop:80, background:"var(--black)", minHeight:"100vh" }}>
+    <div style={{ paddingTop:90, background:"var(--black)", minHeight:"100vh" }}>
       {/* Header */}
       <div style={{ background:"var(--dark)", padding:"48px 8% 40px", borderBottom:"1px solid rgba(201,168,76,0.1)" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto" }}>
@@ -577,7 +624,7 @@ const PropertiesPage = ({ setPage }) => {
               </div>
             ) : (
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20 }}>
-                {listings.map(l => <PropertyCard key={l._id} listing={l} setPage={setPage} />)}
+                {listings.map(l => <PropertyCard key={l.id||l._id} listing={l} setPage={setPage} />)}
               </div>
             )}
           </>
@@ -621,14 +668,14 @@ const PropertyDetailPage = ({ setPage }) => {
   };
 
   return (
-    <div style={{ paddingTop:80, background:"var(--black)", minHeight:"100vh" }}>
+    <div style={{ paddingTop:90, background:"var(--black)", minHeight:"100vh" }}>
       {/* Back */}
       <div style={{ padding:"20px 8%", background:"var(--dark)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
         <span onClick={() => { setPage("properties"); window.scrollTo(0,0); }} style={{ color:"var(--gold)", fontSize:"0.8rem", cursor:"pointer", letterSpacing:"0.1em" }}>← Back to Properties</span>
       </div>
 
       <div style={{ maxWidth:"100%", margin:"0 auto", padding:"48px 5%" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 380px", gap:48 }}>
+        <div className="detail-grid" style={{ display:"grid", gridTemplateColumns:"1fr minmax(0,360px)", gap:32 }}>
           {/* Left */}
           <div>
             {/* Main image */}
@@ -864,15 +911,15 @@ const AdminPage = ({ setPage }) => {
   ];
 
   const openAdd = () => { setEditListing(null); setForm({ title:"", description:"", price:"", type:"Apartment", tag:"New", status:"For Sale", location:{address:"",neighbourhood:""}, details:{beds:1,baths:1,sqft:0}, images:[{url:""}], features:"" }); setShowForm(true); };
-  const openEdit = (l) => { setEditListing(l); setForm({ ...l, features: l.features?.join(", ")||"" }); setShowForm(true); };
+  const openEdit = (l) => { setEditListing({...l, id: l.id||l._id}); setForm({ ...l, features: l.features?.join(", ")||"" }); setShowForm(true); };
 
   const handleSave = async (e) => {
     e.preventDefault();
     const data = { ...form, price: Number(form.price), features: form.features.split(",").map(f=>f.trim()).filter(Boolean), images: form.images?.length ? form.images : [{url:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=900"}] };
     try {
       if (editListing) {
-        await api.updateProperty(editListing.id, data);
-        setListings(ls => ls.map(l => l.id===editListing.id ? { ...l, ...data } : l));
+        await api.updateProperty(editListing.id||editListing._id, data);
+        setListings(ls => ls.map(l => (l.id||l._id)===(editListing.id||editListing._id) ? { ...l, ...data } : l));
         toast("Property updated successfully");
       } else {
         const ref = await api.createProperty(data);
@@ -889,7 +936,7 @@ const AdminPage = ({ setPage }) => {
     if (!window.confirm("Are you sure you want to remove this listing?")) return;
     try {
       await api.deleteProperty(id);
-      setListings(ls => ls.filter(l => l.id !== id));
+      setListings(ls => ls.filter(l => (l.id||l._id) !== id));
       toast("Property removed");
     } catch (err) {
       toast("Error removing property", "error");
@@ -909,7 +956,7 @@ const AdminPage = ({ setPage }) => {
   const TABS = [["dashboard","Dashboard"],["listings","Listings"],["enquiries","Enquiries"]];
 
   return (
-    <div style={{ paddingTop:80, background:"var(--black)", minHeight:"100vh" }}>
+    <div style={{ paddingTop:90, background:"var(--black)", minHeight:"100vh" }}>
       {/* Admin Header */}
       <div style={{ background:"var(--dark)", borderBottom:"1px solid rgba(201,168,76,0.12)", padding:"0 5%" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:24, paddingBottom:0 }}>
@@ -963,7 +1010,7 @@ const AdminPage = ({ setPage }) => {
               <div style={{ background:"var(--dark2)", border:"1px solid rgba(255,255,255,0.06)", padding:"24px" }}>
                 <h3 style={{ fontFamily:"var(--serif)", fontSize:"1.2rem", color:"var(--white)", marginBottom:18, paddingBottom:12, borderBottom:"1px solid rgba(255,255,255,0.07)" }}>Recent Listings</h3>
                 {listings.slice(0,4).map(l => (
-                  <div key={l._id} style={{ padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div key={l.id||l._id} style={{ padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                     <div>
                       <div style={{ fontSize:"0.85rem", color:"var(--white)", marginBottom:2 }}>{l.title}</div>
                       <div style={{ fontSize:"0.72rem", color:"var(--gold)" }}>{fmtPrice(l.price)}</div>
@@ -1015,7 +1062,43 @@ const AdminPage = ({ setPage }) => {
                     <Field label="Baths"><input type="number" min="1" value={form.details?.baths} onChange={e=>setForm({...form,details:{...form.details,baths:e.target.value}})} style={InputStyle} onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
                     <Field label="Sqft"><input type="number" value={form.details?.sqft} onChange={e=>setForm({...form,details:{...form.details,sqft:e.target.value}})} style={InputStyle} onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
                     <div style={{ gridColumn:"1/-1" }}>
-                      <Field label="Image URL"><input value={form.images?.[0]?.url||""} onChange={e=>setForm({...form,images:[{url:e.target.value}]})} style={InputStyle} placeholder="https://..." onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
+                      <label style={LabelStyle}>Property Image</label>
+                      
+                      {/* Preview */}
+                      {form.images?.[0]?.url && (
+                        <div style={{ position:"relative", marginBottom:10 }}>
+                          <img src={form.images[0].url} alt="Preview" style={{ width:"100%", height:160, objectFit:"cover", borderRadius:2 }} 
+                            onError={e=>e.target.style.display="none"} />
+                          <div onClick={()=>setForm({...form,images:[{url:""}]})} style={{ position:"absolute", top:8, right:8, background:"rgba(0,0,0,0.7)", color:"#fff", width:28, height:28, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:"1rem" }}>✕</div>
+                        </div>
+                      )}
+
+                      {/* Upload from device */}
+                      <div style={{ marginBottom:10 }}>
+                        <label style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, background:"rgba(201,168,76,0.08)", border:"1px dashed rgba(201,168,76,0.4)", padding:"14px 20px", cursor:"pointer", borderRadius:2, color:"var(--gold)", fontSize:"0.82rem", letterSpacing:"0.1em" }}>
+                          📁 Choose Image From Device
+                          <input type="file" accept="image/*" style={{ display:"none" }} onChange={e=>{
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            if (file.size > 5 * 1024 * 1024) { alert("Image must be less than 5MB"); return; }
+                            const reader = new FileReader();
+                            reader.onload = (ev) => setForm(f=>({...f, images:[{url: ev.target.result}]}));
+                            reader.readAsDataURL(file);
+                          }} />
+                        </label>
+                      </div>
+
+                      {/* OR URL */}
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:8 }}>
+                        <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.08)" }} />
+                        <span style={{ fontSize:"0.68rem", color:"var(--white-dim)", letterSpacing:"0.1em" }}>OR PASTE URL</span>
+                        <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.08)" }} />
+                      </div>
+                      <input value={form.images?.[0]?.url?.startsWith("data:") ? "" : form.images?.[0]?.url||""} 
+                        onChange={e=>setForm({...form,images:[{url:e.target.value}]})} 
+                        style={InputStyle} placeholder="https://images.unsplash.com/..." 
+                        onFocus={e=>e.target.style.borderColor="var(--gold)"} 
+                        onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} />
                     </div>
                     <div style={{ gridColumn:"1/-1" }}>
                       <Field label="Features (comma separated)"><input value={form.features} onChange={e=>setForm({...form,features:e.target.value})} style={InputStyle} placeholder="Pool, Gym, Security..." onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
@@ -1044,7 +1127,7 @@ const AdminPage = ({ setPage }) => {
                 </thead>
                 <tbody>
                   {listings.map((l,i) => (
-                    <tr key={l._id} style={{ borderBottom:"1px solid rgba(255,255,255,0.05)", background:i%2===0?"transparent":"rgba(255,255,255,0.015)" }}>
+                    <tr key={l.id||l._id} style={{ borderBottom:"1px solid rgba(255,255,255,0.05)", background:i%2===0?"transparent":"rgba(255,255,255,0.015)" }}>
                       <td style={{ padding:"14px 16px" }}>
                         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                           <img src={l.images?.[0]?.url} alt="" style={{ width:48, height:36, objectFit:"cover" }} />
@@ -1059,7 +1142,7 @@ const AdminPage = ({ setPage }) => {
                       <td style={{ padding:"14px 16px" }}>
                         <div style={{ display:"flex", gap:8 }}>
                           <button onClick={() => openEdit(l)} style={{ background:"none", border:"1px solid rgba(201,168,76,0.3)", color:"var(--gold)", padding:"5px 12px", fontSize:"0.7rem", cursor:"pointer", letterSpacing:"0.08em" }}>Edit</button>
-                          <button onClick={() => handleDelete(l._id)} style={{ background:"none", border:"1px solid rgba(224,92,92,0.3)", color:"var(--red)", padding:"5px 12px", fontSize:"0.7rem", cursor:"pointer", letterSpacing:"0.08em" }}>Remove</button>
+                          <button onClick={() => handleDelete(l.id || l._id)} style={{ background:"none", border:"1px solid rgba(224,92,92,0.3)", color:"var(--red)", padding:"5px 12px", fontSize:"0.7rem", cursor:"pointer", letterSpacing:"0.08em" }}>Remove</button>
                         </div>
                       </td>
                     </tr>
@@ -1084,7 +1167,7 @@ const AdminPage = ({ setPage }) => {
 
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
               {enquiries.map(e => (
-                <div key={e._id} style={{ background:"var(--dark2)", border:"1px solid rgba(255,255,255,0.06)", padding:"20px 22px", display:"grid", gridTemplateColumns:"1fr 1fr auto", gap:20, alignItems:"start" }}>
+                <div key={e._id} style={{ background:"var(--dark2)", border:"1px solid rgba(255,255,255,0.06)", padding:"20px 22px", display:"grid", gridTemplateColumns:"1fr 1fr auto", gap:12, alignItems:"start", className:"enquiry-grid" }}>
                   <div>
                     <div style={{ fontSize:"0.65rem", letterSpacing:"0.14em", color:"var(--gold)", textTransform:"uppercase", marginBottom:6 }}>{e.interest}</div>
                     <div style={{ fontSize:"0.95rem", color:"var(--white)", marginBottom:4 }}>{e.name}</div>
@@ -1129,21 +1212,21 @@ const ContactPage = ({ setPage }) => {
   };
 
   return (
-    <div style={{ paddingTop:80, background:"var(--dark)", minHeight:"100vh" }}>
-      <div style={{ background:"var(--black)", padding:"60px 8% 50px", borderBottom:"1px solid rgba(201,168,76,0.1)" }}>
+    <div style={{ paddingTop:90, background:"var(--dark)", minHeight:"100vh" }}>
+      <div style={{ background:"var(--black)", padding:"clamp(32px,5vw,60px) 5% clamp(24px,4vw,50px)", borderBottom:"1px solid rgba(201,168,76,0.1)" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto" }}>
           <p style={{ fontSize:"0.7rem", letterSpacing:"0.24em", color:"var(--gold)", textTransform:"uppercase", marginBottom:12 }}>Get In Touch</p>
           <h1 style={{ fontFamily:"var(--serif)", fontSize:"clamp(2rem,4vw,3rem)", fontWeight:300, color:"var(--white)" }}>Contact Us</h1>
         </div>
       </div>
 
-      <div style={{ maxWidth:"100%", margin:"0 auto", padding:"72px 5%", display:"grid", gridTemplateColumns:"1fr 1fr", gap:80, alignItems:"start" }}>
+      <div className="contact-grid" style={{ maxWidth:"100%", margin:"0 auto", padding:"clamp(40px,6vw,72px) 5%", display:"grid", gridTemplateColumns:"1fr 1fr", gap:40, alignItems:"start" }}>
         {/* Info */}
         <div>
           <div style={{ width:36, height:1, background:"var(--gold)", marginBottom:24 }} />
           <h2 style={{ fontFamily:"var(--serif)", fontSize:"clamp(1.8rem,3vw,2.6rem)", fontWeight:300, color:"var(--white)", lineHeight:1.25, marginBottom:20 }}>Begin Your Property Journey</h2>
           <p style={{ color:"var(--white-dim)", lineHeight:1.9, fontSize:"0.92rem", marginBottom:44 }}>Our team of experts is ready to connect you with the finest properties. Reach out and let us curate an exclusive selection tailored to your needs.</p>
-          {[{ label:"Office", value:"Westlands Business Park" },{ label:"Phone", value:"+254 700 000 000" },{ label:"Email", value:"info@cybalcapital.co.ke" }].map(({ label, value }) => (
+          {[{ label:"Office", value:"Westlands Business Park" },{ label:"Phone", value:"+254 741164545" },{ label:"Email", value:"info@cybalcapital.co.ke" }].map(({ label, value }) => (
             <div key={label} style={{ marginBottom:22, display:"flex", gap:18, alignItems:"flex-start" }}>
               <div style={{ width:1, background:"var(--gold)", height:38, marginTop:2, flexShrink:0 }} />
               <div>
@@ -1155,7 +1238,7 @@ const ContactPage = ({ setPage }) => {
         </div>
 
         {/* Form */}
-        <div style={{ background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.12)", padding:"36px 32px" }}>
+        <div style={{ background:"var(--dark2)", border:"1px solid rgba(201,168,76,0.12)", padding:"clamp(16px,4vw,36px) clamp(16px,4vw,32px)" }}>
           {sent ? (
             <div style={{ textAlign:"center", padding:"40px 0" }}>
               <div style={{ fontSize:"3rem", marginBottom:16 }}>✓</div>
@@ -1165,7 +1248,7 @@ const ContactPage = ({ setPage }) => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+              <div className="form-row" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
                 <Field label="Full Name"><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} style={InputStyle} required onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
                 <Field label="Email"><input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} style={InputStyle} required onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
               </div>
@@ -1175,7 +1258,7 @@ const ContactPage = ({ setPage }) => {
                   {["Buying","Selling","Investment Advisory","General Enquiry"].map(o=><option key={o} value={o} style={{background:"#161616"}}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Message"><textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} style={{ ...InputStyle, height:130, resize:"vertical" }} required onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
+              <Field label="Message"><textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} style={{ ...InputStyle, height:120, resize:"vertical", width:"100%" }} required onFocus={e=>e.target.style.borderColor="var(--gold)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.12)"} /></Field>
               <GoldBtn type="submit" style={{ width:"100%" }}>{loading?"Sending...":"Send Enquiry"}</GoldBtn>
             </form>
           )}
@@ -1188,19 +1271,19 @@ const ContactPage = ({ setPage }) => {
 
 // ── ABOUT PAGE ────────────────────────────────────────────────────────────────
 const AboutPage = ({ setPage }) => (
-  <div style={{ paddingTop:80, background:"var(--black)", minHeight:"100vh" }}>
+  <div style={{ paddingTop:90, background:"var(--black)", minHeight:"100vh" }}>
     <div style={{ background:"var(--dark)", padding:"60px 8% 50px", borderBottom:"1px solid rgba(201,168,76,0.1)" }}>
       <div style={{ maxWidth:"100%", margin:"0 auto" }}>
         <p style={{ fontSize:"0.7rem", letterSpacing:"0.24em", color:"var(--gold)", textTransform:"uppercase", marginBottom:12 }}>Our Story</p>
         <h1 style={{ fontFamily:"var(--serif)", fontSize:"clamp(2rem,4vw,3rem)", fontWeight:300, color:"var(--white)" }}>About Cybal Capital</h1>
       </div>
     </div>
-    <div style={{ maxWidth:"100%", margin:"0 auto", padding:"72px 5%" }}>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"center", marginBottom:80 }}>
+    <div style={{ maxWidth:"100%", margin:"0 auto", padding:"clamp(40px,6vw,72px) 5%" }}>
+      <div className="about-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32, alignItems:"center", marginBottom:60 }}>
         <div style={{ position:"relative" }}>
-          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=85" alt="City" style={{ width:"100%", height:500, objectFit:"cover" }} />
-          <div style={{ position:"absolute", top:-14, left:-14, width:"55%", height:"55%", border:"1px solid var(--gold)", zIndex:-1 }} />
-          <div style={{ position:"absolute", bottom:-22, right:-22, background:"var(--gold)", padding:"22px 26px", textAlign:"center" }}>
+          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=85" alt="City" style={{ width:"100%", height:"clamp(220px,40vw,500px)", objectFit:"cover" }} />
+          <div className="about-gold-box" style={{ position:"absolute", top:-14, left:-14, width:"55%", height:"55%", border:"1px solid var(--gold)", zIndex:-1 }} />
+          <div className="about-gold-box" style={{ position:"absolute", bottom:-22, right:-22, background:"var(--gold)", padding:"16px 20px", textAlign:"center" }}>
             <div style={{ fontFamily:"var(--serif)", fontSize:"2rem", fontWeight:600, color:"var(--black)" }}>4+</div>
             <div style={{ fontSize:"0.65rem", letterSpacing:"0.1em", color:"rgba(8,8,8,0.7)", textTransform:"uppercase", marginTop:4 }}>Years<br/>Excellence</div>
           </div>
@@ -1210,7 +1293,7 @@ const AboutPage = ({ setPage }) => (
           <p style={{ color:"var(--white-dim)", lineHeight:1.9, fontSize:"0.92rem", marginBottom:18 }}><strong style={{ color:"var(--white)", fontWeight:500 }}>Cybal Capital Limited</strong> is a premier luxury real estate marketing company, offering exclusive access to multi-million-dollar properties. With a commitment to excellence, we provide bespoke real estate solutions tailored to meet the unique needs of our clients.</p>
           <p style={{ color:"var(--white-dim)", lineHeight:1.9, fontSize:"0.92rem", marginBottom:18 }}>Guided by our core values of quality, integrity, and innovation, we passionately strive to deliver exceptional marketing strategies and customer service that highlight the true potential of premium developments.</p>
           <p style={{ color:"var(--white-dim)", lineHeight:1.9, fontSize:"0.92rem", marginBottom:36 }}>With over four years of expertise, Cybal Capital Limited connects discerning clients with luxurious and sustainable properties, making us a trusted name in the competitive real estate market.</p>
-          <div style={{ display:"flex", gap:36 }}>
+          <div style={{ display:"flex", gap:24, flexWrap:"wrap" }}>
             {["Quality","Integrity","Innovation"].map(v=>(
               <div key={v}>
                 <div style={{ width:22, height:1, background:"var(--gold)", marginBottom:8 }} />
@@ -1231,7 +1314,7 @@ const Footer = ({ setPage }) => {
   return (
     <footer style={{ background:"#050505", borderTop:"1px solid rgba(201,168,76,0.12)", padding:"56px 5% 32px" }}>
       <div style={{ maxWidth:"100%", margin:"0 auto" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:32, marginBottom:36 }}>
+        <div className="footer-grid" style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:24, marginBottom:32 }}>
           <div>
             <div style={{ fontFamily:"var(--serif)", fontSize:"1.2rem", fontWeight:600, color:"var(--white)", letterSpacing:"0.06em", marginBottom:3 }}>CYBAL CAPITAL</div>
             <div style={{ fontSize:"0.58rem", letterSpacing:"0.22em", color:"var(--gold)", marginBottom:16 }}>LIMITED</div>
@@ -1251,7 +1334,7 @@ const Footer = ({ setPage }) => {
             </div>
           ))}
         </div>
-        <div style={{ borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div className="footer-bottom" style={{ borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <div style={{ fontSize:"0.73rem", color:"rgba(255,255,255,0.22)" }}>© 2026 Cybal Capital Limited. All rights reserved.</div>
           <div style={{ display:"flex", gap:20, alignItems:"center" }}>
             {["Privacy Policy","Terms of Service"].map(t=>(
@@ -1337,6 +1420,40 @@ const AdminLoginPage = ({ setPage }) => {
   );
 };
 
+// ── BOTTOM NAV (Mobile Only) ─────────────────────────────────────────────────
+const BottomNav = ({ page, setPage }) => {
+  const { user, logoutUser } = useAuth();
+  const toast = useToast();
+
+  const go = (p) => { setPage(p); window.scrollTo(0,0); };
+
+  const items = [
+    { page:"home",       icon:"🏠", label:"Home" },
+    { page:"properties", icon:"🏢", label:"Properties" },
+    { page:"about",      icon:"⭐", label:"About" },
+    { page:"contact",    icon:"📞", label:"Contact" },
+  ];
+
+  return (
+    <div className="bottom-nav">
+      {items.map(item => (
+        <div key={item.page} className="bottom-nav-item" onClick={() => go(item.page)}
+          style={{ color: page === item.page ? "var(--gold)" : "rgba(255,255,255,0.5)" }}>
+          <span className="icon">{item.icon}</span>
+          <span className="label">{item.label}</span>
+        </div>
+      ))}
+      {user?.role === "admin" ? (
+        <div className="bottom-nav-item" onClick={() => go("admin")}
+          style={{ color:"var(--gold)" }}>
+          <span className="icon">⚙️</span>
+          <span className="label">Admin</span>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
 // ── SECRET ADMIN PATH (only you know this URL) ───────────────────────────────
 const SECRET_PATH = "cybal-admin-2026"; // change this anytime
 
@@ -1383,6 +1500,7 @@ export default function App() {
         <GlobalStyles />
         <Navbar page={page} setPage={setPage} />
         {renderPage()}
+
       </ToastProvider>
     </AuthProvider>
   );
