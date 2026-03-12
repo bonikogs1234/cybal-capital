@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCflprFBgFC5GeXix5k5V0NqZm2nmH4Wag",
-  authDomain: "cybal-capital-cc9d1.firebaseapp.com",
-  projectId: "cybal-capital-cc9d1",
-  storageBucket: "cybal-capital-cc9d1.firebasestorage.app",
-  messagingSenderId: "544084788794",
-  appId: "1:544084788794:web:dec3f0f519b1e29584d703"
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY            || "AIzaSyCflprFBgFC5GeXix5k5V0NqZm2nmH4Wag",
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN        || "cybal-capital-cc9d1.firebaseapp.com",
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID         || "cybal-capital-cc9d1",
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET     || "cybal-capital-cc9d1.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID|| "544084788794",
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID             || "1:544084788794:web:dec3f0f519b1e29584d703"
 };
 
 const app = initializeApp(firebaseConfig);
