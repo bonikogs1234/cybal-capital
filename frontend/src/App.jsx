@@ -139,6 +139,7 @@ const GlobalStyles = () => (
 
 // ── MOCK API (replace with real axios calls in production) ────────────────────
 const MOCK_LISTINGS = [
+  { _id:"1", title:"The Pinnacle Residences", location:{neighbourhood:"Westlands", address:"14 Westlands Rd"}, price:45000000, details:{beds:4,baths:4,sqft:3800}, type:"Penthouse", tag:"Featured", status:"For Sale", isFeatured:true, views:234, images:[{url:"https://images.unsplash.com/photo-1600607687939-ce8a6d8f7046?w=900&q=85"}], description:"A stunning penthouse with panoramic city views, floor-to-ceiling windows, and premium finishes throughout.", features:["Swimming Pool","Gym","24hr Security","Smart Home","Balcony"], createdAt:"2026-01-15" },
   { _id:"2", title:"Serene Gardens Estate", location:{neighbourhood:"Karen", address:"88 Karen Rd"}, price:78000000, details:{beds:5,baths:5,sqft:5200}, type:"Villa", tag:"Exclusive", status:"For Sale", isFeatured:true, views:189, images:[{url:"https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=85"}], description:"Majestic villa set in lush gardens with a private pool, guest cottage, and expansive entertaining spaces.", features:["Private Pool","Guest Cottage","Garden","Security","Garage"], createdAt:"2026-01-20" },
   { _id:"3", title:"Skyline Tower Suite", location:{neighbourhood:"Upper Hill", address:"5 Hill Ln"}, price:28500000, details:{beds:3,baths:3,sqft:2400}, type:"Apartment", tag:"New", status:"For Sale", isFeatured:false, views:112, images:[{url:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&q=85"}], description:"Contemporary apartment in the heart of the business district with spectacular skyline views.", features:["Concierge","Gym","Rooftop Terrace","Underground Parking"], createdAt:"2026-02-01" },
   { _id:"4", title:"The Grand Runda", location:{neighbourhood:"Runda", address:"3 Runda Grove"}, price:120000000, details:{beds:6,baths:6,sqft:7800}, type:"Mansion", tag:"Luxury", status:"For Sale", isFeatured:true, views:301, images:[{url:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=900&q=85"}], description:"An architectural masterpiece with cinema room, wine cellar, infinity pool, and manicured grounds.", features:["Infinity Pool","Cinema Room","Wine Cellar","Staff Quarters","Tennis Court"], createdAt:"2026-01-10" },
@@ -880,12 +881,12 @@ const AdminPage = ({ setPage }) => {
     Promise.all([api.getProperties(), api.getEnquiries()])
       .then(([props, enqs]) => {
         setListings(props.length > 0 ? props : MOCK_LISTINGS);
-        setEnquiries(enqs.length > 0 ? enqs : MOCK_ENQUIRIES);
+        setEnquiries(enqs);
         setLoadingData(false);
       })
       .catch(() => {
         setListings(MOCK_LISTINGS);
-        setEnquiries(MOCK_ENQUIRIES);
+        setEnquiries([]);
         setLoadingData(false);
       });
   }, [user]);
@@ -1157,7 +1158,16 @@ const AdminPage = ({ setPage }) => {
         {tab === "enquiries" && (
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:28 }}>
-              <h2 style={{ fontFamily:"var(--serif)", fontSize:"1.6rem", fontWeight:300, color:"var(--white)" }}>Enquiries ({enquiries.length})</h2>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
+                <h2 style={{ fontFamily:"var(--serif)", fontSize:"1.6rem", fontWeight:300, color:"var(--white)" }}>Enquiries ({enquiries.length})</h2>
+                <GoldBtn small outline onClick={async()=>{
+                  try {
+                    const enqs = await api.getEnquiries();
+                    setEnquiries(enqs);
+                    toast("Enquiries refreshed!");
+                  } catch { toast("Failed to refresh","error"); }
+                }}>↻ Refresh</GoldBtn>
+              </div>
               <div style={{ display:"flex", gap:8 }}>
                 {["All","New","Read","Replied","Closed"].map(s => (
                   <button key={s} style={{ background:"none", border:"1px solid rgba(255,255,255,0.15)", color:"var(--white-dim)", padding:"6px 14px", fontSize:"0.7rem", cursor:"pointer", letterSpacing:"0.08em" }}>{s}</button>
@@ -1206,9 +1216,24 @@ const ContactPage = ({ setPage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setLoading(false); setSent(true);
-    toast("Enquiry submitted! We'll be in touch shortly.");
+    try {
+      await api.submitEnquiry({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        interest: form.interest,
+        message: form.message,
+        propertyId: null,
+        propertyTitle: "General Enquiry",
+        status: "New"
+      });
+      setSent(true);
+      toast("Enquiry submitted! We'll be in touch shortly.");
+    } catch(err) {
+      toast("Failed to send. Please try again.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -1226,7 +1251,7 @@ const ContactPage = ({ setPage }) => {
           <div style={{ width:36, height:1, background:"var(--gold)", marginBottom:24 }} />
           <h2 style={{ fontFamily:"var(--serif)", fontSize:"clamp(1.8rem,3vw,2.6rem)", fontWeight:300, color:"var(--white)", lineHeight:1.25, marginBottom:20 }}>Begin Your Property Journey</h2>
           <p style={{ color:"var(--white-dim)", lineHeight:1.9, fontSize:"0.92rem", marginBottom:44 }}>Our team of experts is ready to connect you with the finest properties. Reach out and let us curate an exclusive selection tailored to your needs.</p>
-          {[{ label:"Office", value:"Westlands Business Park" },{ label:"Phone", value:"+254 741164545" },{ label:"Email", value:"info@cybalcapital.co.ke" }].map(({ label, value }) => (
+          {[{ label:"Office", value:"Westlands Business Park" },{ label:"Phone", value:"+254 700 000 000" },{ label:"Email", value:"info@cybalcapital.co.ke" }].map(({ label, value }) => (
             <div key={label} style={{ marginBottom:22, display:"flex", gap:18, alignItems:"flex-start" }}>
               <div style={{ width:1, background:"var(--gold)", height:38, marginTop:2, flexShrink:0 }} />
               <div>
