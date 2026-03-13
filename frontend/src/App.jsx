@@ -1089,9 +1089,31 @@ const AdminPage = ({ setPage }) => {
                           <input type="file" accept="image/*" style={{ display:"none" }} onChange={e=>{
                             const file = e.target.files[0];
                             if (!file) return;
-                            if (file.size > 5 * 1024 * 1024) { alert("Image must be less than 5MB"); return; }
+                            if (file.size > 15 * 1024 * 1024) { alert("Image too large. Please choose an image under 15MB."); return; }
+                            // Auto-compress using canvas
                             const reader = new FileReader();
-                            reader.onload = (ev) => setForm(f=>({...f, images:[{url: ev.target.result}]}));
+                            reader.onload = (ev) => {
+                              const img = new Image();
+                              img.onload = () => {
+                                const canvas = document.createElement("canvas");
+                                const MAX = 1200;
+                                let w = img.width, h = img.height;
+                                if (w > h && w > MAX) { h = h * MAX / w; w = MAX; }
+                                else if (h > MAX) { w = w * MAX / h; h = MAX; }
+                                canvas.width = w; canvas.height = h;
+                                canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                                const compressed = canvas.toDataURL("image/jpeg", 0.82);
+                                const kb = Math.round(compressed.length * 0.75 / 1024);
+                                if (kb > 900) {
+                                  // compress more if still too big
+                                  const compressed2 = canvas.toDataURL("image/jpeg", 0.6);
+                                  setForm(f=>({...f, images:[{url: compressed2}]}));
+                                } else {
+                                  setForm(f=>({...f, images:[{url: compressed}]}));
+                                }
+                              };
+                              img.src = ev.target.result;
+                            };
                             reader.readAsDataURL(file);
                           }} />
                         </label>
