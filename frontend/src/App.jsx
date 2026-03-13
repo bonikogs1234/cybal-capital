@@ -1281,7 +1281,7 @@ const ContactPage = ({ setPage }) => {
           <div style={{ width:36, height:1, background:"var(--gold)", marginBottom:24 }} />
           <h2 style={{ fontFamily:"var(--serif)", fontSize:"clamp(1.8rem,3vw,2.6rem)", fontWeight:300, color:"var(--white)", lineHeight:1.25, marginBottom:20 }}>Begin Your Property Journey</h2>
           <p style={{ color:"var(--white-dim)", lineHeight:1.9, fontSize:"0.92rem", marginBottom:44 }}>Our team of experts is ready to connect you with the finest properties. Reach out and let us curate an exclusive selection tailored to your needs.</p>
-          {[{ label:"Office", value:"Karen, Nairobi" },{ label:"Phone", value:"+254 714 164 545" },{ label:"Email", value:"info@cybalcapital.co.ke" }].map(({ label, value }) => (
+          {[{ label:"Office", value:"Karen, Nairobi" },{ label:"Phone", value:"+254 741 164 545" },{ label:"Email", value:"info@cybalcapital.co.ke" }].map(({ label, value }) => (
             <div key={label} style={{ marginBottom:22, display:"flex", gap:18, alignItems:"flex-start" }}>
               <div style={{ width:1, background:"var(--gold)", height:38, marginTop:2, flexShrink:0 }} />
               <div>
@@ -1370,7 +1370,7 @@ const SOCIAL_LINKS = [
   { name:"Instagram", icon:"in", url:"https://instagram.com/cybalcapital", color:"#e1306c" },
   { name:"Twitter",   icon:"𝕏",  url:"https://twitter.com/cybalcapital",  color:"#fff"    },
   { name:"LinkedIn",  icon:"li", url:"https://linkedin.com/company/cybalcapital", color:"#0a66c2" },
-  { name:"WhatsApp",  icon:"w",  url:"https://wa.me/254714164545",         color:"#25d366" },
+  { name:"WhatsApp",  icon:"w",  url:"https://wa.me/254741164545",         color:"#25d366" },
   { name:"TikTok",    icon:"tt", url:"https://tiktok.com/@cybalcapital",   color:"#fff"    },
 ];
 
@@ -1415,7 +1415,7 @@ const Footer = ({ setPage }) => {
           </div>
 
           {/* Other columns */}
-          {[["Company",[["home","Home"],["about","About"],["contact","Contact"]]],["Properties",[["properties","All Properties"],["properties","Featured"],["properties","For Sale"]]],["Contact",[null,"Karen, Nairobi","+254 714 164 545","info@cybalcapital.co.ke"]]].map(([col, items]) => (
+          {[["Company",[["home","Home"],["about","About"],["contact","Contact"]]],["Properties",[["properties","All Properties"],["properties","Featured"],["properties","For Sale"]]],["Contact",[null,"Karen, Nairobi","+254 741 164 545","info@cybalcapital.co.ke"]]].map(([col, items]) => (
             <div key={col}>
               <div style={{ fontSize:"0.66rem", letterSpacing:"0.18em", color:"var(--gold)", textTransform:"uppercase", marginBottom:16, fontWeight:500 }}>{col}</div>
               {items.map((item,i) => (
