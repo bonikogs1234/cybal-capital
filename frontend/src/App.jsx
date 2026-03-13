@@ -402,7 +402,12 @@ const HomePage = ({ setPage }) => {
   }, []);
 
   useEffect(() => {
-    setFeatured(MOCK_LISTINGS.filter(l => l.isFeatured).slice(0,3));
+    api.getProperties().then(props => {
+      const featured = props.filter(l => l.isFeatured).slice(0,3);
+      setFeatured(featured.length > 0 ? featured : MOCK_LISTINGS.filter(l => l.isFeatured).slice(0,3));
+    }).catch(() => {
+      setFeatured(MOCK_LISTINGS.filter(l => l.isFeatured).slice(0,3));
+    });
   }, []);
 
   return (
@@ -571,17 +576,20 @@ const PropertiesPage = ({ setPage }) => {
 
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      let res = [...MOCK_LISTINGS];
-      if (applied.search) res = res.filter(l => l.title.toLowerCase().includes(applied.search.toLowerCase()) || l.location.neighbourhood.toLowerCase().includes(applied.search.toLowerCase()));
+    api.getProperties().then(props => {
+      let res = props.length > 0 ? [...props] : [...MOCK_LISTINGS];
+      if (applied.search) res = res.filter(l => l.title?.toLowerCase().includes(applied.search.toLowerCase()) || l.location?.neighbourhood?.toLowerCase().includes(applied.search.toLowerCase()));
       if (applied.type) res = res.filter(l => l.type === applied.type);
-      if (applied.neighbourhood) res = res.filter(l => l.location.neighbourhood === applied.neighbourhood);
+      if (applied.neighbourhood) res = res.filter(l => l.location?.neighbourhood === applied.neighbourhood);
       if (applied.minPrice) res = res.filter(l => l.price >= Number(applied.minPrice));
       if (applied.maxPrice) res = res.filter(l => l.price <= Number(applied.maxPrice));
-      if (applied.beds) res = res.filter(l => l.details.beds >= Number(applied.beds));
+      if (applied.beds) res = res.filter(l => l.details?.beds >= Number(applied.beds));
       setListings(res);
       setLoading(false);
-    }, 400);
+    }).catch(() => {
+      setListings(MOCK_LISTINGS);
+      setLoading(false);
+    });
   }, [applied]);
 
   const applyFilters = () => setApplied({...filters});
