@@ -155,7 +155,15 @@ const MOCK_ENQUIRIES = [
 ];
 
 const fmtPrice = (n) => "KSh " + Number(n).toLocaleString();
-const fmtDate  = (d) => new Date(d).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+const fmtDate  = (d) => {
+  if (!d) return "—";
+  try {
+    // Firebase Timestamp object has .toDate() method
+    const date = d?.toDate ? d.toDate() : new Date(d);
+    if (isNaN(date)) return "—";
+    return date.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+  } catch { return "—"; }
+};
 
 // ── FIREBASE API ─────────────────────────────────────────────────────────────
 const api = {
@@ -947,7 +955,7 @@ const AdminPage = ({ setPage }) => {
   const updateEnquiryStatus = async (id, status) => {
     try {
       await api.updateEnquiryStatus(id, status);
-      setEnquiries(es => es.map(e => e.id===id ? {...e,status} : e));
+      setEnquiries(es => es.map(e => (e.id||e._id)===id ? {...e,status} : e));
       toast("Enquiry status updated");
     } catch (err) {
       toast("Error updating status", "error");
@@ -997,7 +1005,7 @@ const AdminPage = ({ setPage }) => {
               <div style={{ background:"var(--dark2)", border:"1px solid rgba(255,255,255,0.06)", padding:"24px" }}>
                 <h3 style={{ fontFamily:"var(--serif)", fontSize:"1.2rem", color:"var(--white)", marginBottom:18, paddingBottom:12, borderBottom:"1px solid rgba(255,255,255,0.07)" }}>Recent Enquiries</h3>
                 {enquiries.slice(0,4).map(e => (
-                  <div key={e._id} style={{ padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div key={e.id||e._id} style={{ padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                     <div>
                       <div style={{ fontSize:"0.85rem", color:"var(--white)", marginBottom:2 }}>{e.name}</div>
                       <div style={{ fontSize:"0.72rem", color:"var(--white-dim)" }}>{e.interest} · {fmtDate(e.createdAt)}</div>
@@ -1177,7 +1185,7 @@ const AdminPage = ({ setPage }) => {
 
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
               {enquiries.map(e => (
-                <div key={e._id} style={{ background:"var(--dark2)", border:"1px solid rgba(255,255,255,0.06)", padding:"20px 22px", display:"grid", gridTemplateColumns:"1fr 1fr auto", gap:12, alignItems:"start", className:"enquiry-grid" }}>
+                <div key={e.id||e._id} style={{ background:"var(--dark2)", border:"1px solid rgba(255,255,255,0.06)", padding:"20px 22px", display:"grid", gridTemplateColumns:"1fr 1fr auto", gap:12, alignItems:"start", className:"enquiry-grid" }}>
                   <div>
                     <div style={{ fontSize:"0.65rem", letterSpacing:"0.14em", color:"var(--gold)", textTransform:"uppercase", marginBottom:6 }}>{e.interest}</div>
                     <div style={{ fontSize:"0.95rem", color:"var(--white)", marginBottom:4 }}>{e.name}</div>
@@ -1191,7 +1199,7 @@ const AdminPage = ({ setPage }) => {
                   </div>
                   <div style={{ display:"flex", flexDirection:"column", gap:6, alignItems:"flex-end" }}>
                     <span style={{ fontSize:"0.65rem", padding:"3px 10px", background: e.status==="New"?"rgba(201,168,76,0.2)":e.status==="Replied"?"rgba(76,175,130,0.2)":"rgba(100,100,100,0.2)", color:e.status==="New"?"var(--gold)":e.status==="Replied"?"var(--green)":"#aaa" }}>{e.status}</span>
-                    <select value={e.status} onChange={ev=>updateEnquiryStatus(e._id,ev.target.value)} style={{ ...InputStyle, padding:"5px 10px", fontSize:"0.72rem", width:"auto", appearance:"none", cursor:"pointer" }}>
+                    <select value={e.status} onChange={ev=>updateEnquiryStatus(e.id||e._id, ev.target.value)} style={{ ...InputStyle, padding:"5px 10px", fontSize:"0.72rem", width:"auto", appearance:"none", cursor:"pointer" }}>
                       {["New","Read","Replied","Closed"].map(s=><option key={s} value={s} style={{background:"#161616"}}>{s}</option>)}
                     </select>
                   </div>
