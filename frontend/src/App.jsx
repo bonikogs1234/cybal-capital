@@ -210,6 +210,17 @@ const api = {
   updateEnquiryStatus: async (id, status) => {
     return await updateDoc(doc(db, "enquiries", id), { status });
   },
+  // Increment property views
+  incrementViews: async (id) => {
+    try {
+      const ref = doc(db, "properties", id);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const current = snap.data().views || 0;
+        await updateDoc(ref, { views: current + 1 });
+      }
+    } catch (e) { /* silent fail */ }
+  },
   // Upload image
   uploadImage: async (file, path) => {
     const storageRef = ref(storage, path);
@@ -664,7 +675,15 @@ const PropertyDetailPage = ({ setPage }) => {
 
   useEffect(() => {
     const saved = localStorage.getItem("cybal_prop");
-    if (saved) setListing(JSON.parse(saved));
+    if (saved) {
+      const prop = JSON.parse(saved);
+      setListing(prop);
+      // Increment views in Firebase
+      const propId = prop.id || prop._id;
+      if (propId && !propId.startsWith("mock_") && propId.length > 5) {
+        api.incrementViews(propId);
+      }
+    }
   }, []);
 
   if (!listing) return <Spinner />;
@@ -675,10 +694,19 @@ const PropertyDetailPage = ({ setPage }) => {
     e.preventDefault();
     setSending(true);
     try {
-      await api.submitEnquiry({ ...enquiryForm, propertyId: property?.id || null, propertyTitle: property?.title || "" });
+      await api.submitEnquiry({
+        name: enquiry.name,
+        email: enquiry.email,
+        phone: enquiry.phone,
+        message: enquiry.message,
+        propertyId: listing?.id || listing?._id || null,
+        propertyTitle: listing?.title || "",
+        interest: "Property Enquiry"
+      });
       setSent(true);
       toast("Enquiry sent! We will be in touch shortly.");
     } catch (err) {
+      console.error("Enquiry error:", err);
       toast("Error sending enquiry. Please try again.", "error");
     }
     setSending(false);
